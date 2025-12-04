@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { insertProductSchema, insertOrderSchema, insertOrderItemSchema, insertUserSchema, type ProductSearchFilters } from "@shared/schema";
 import { analyzeProductImage, generateMarketingContent, generateFlashSaleContent } from "./gemini";
 import { postProductToTelegram, runHourlyCronJob, startCronJob, stopCronJob, isCronRunning } from "./telegram";
+import { uploadImage, isCloudinaryConfigured } from "./cloudinary";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -13,19 +14,25 @@ import { promisify } from "util";
 
 const scryptAsync = promisify(scrypt);
 
+// Lokal upload uchun (fallback)
 const uploadDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-const upload = multer({
-  storage: multer.diskStorage({
+// Cloudinary mavjud bo'lsa memory storage, aks holda disk storage
+const multerStorage = isCloudinaryConfigured()
+  ? multer.memoryStorage()
+  : multer.diskStorage({
     destination: uploadDir,
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
       cb(null, uniqueSuffix + path.extname(file.originalname));
     },
-  }),
+  });
+
+const upload = multer({
+  storage: multerStorage,
   limits: { fileSize: 10 * 1024 * 1024 },
 });
 
@@ -68,11 +75,11 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  
+
   app.post("/api/auth/register", async (req, res) => {
     try {
       const { username, password } = insertUserSchema.parse(req.body);
-      
+
       const existing = await storage.getUserByUsername(username);
       if (existing) {
         return res.status(400).json({ error: "Foydalanuvchi allaqachon mavjud" });
@@ -80,11 +87,11 @@ export async function registerRoutes(
 
       const passwordHash = await hashPassword(password);
       const user = await storage.createUser({ username, password: passwordHash });
-      
+
       req.session.userId = user.id;
       req.session.isAdmin = user.isAdmin;
       req.session.username = user.username;
-      
+
       res.json({ user: { id: user.id, username: user.username, isAdmin: user.isAdmin } });
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -94,7 +101,7 @@ export async function registerRoutes(
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { username, password } = req.body;
-      
+
       const user = await storage.getUserByUsername(username);
       if (!user) {
         return res.status(401).json({ error: "Noto'g'ri login yoki parol" });
@@ -177,11 +184,11 @@ export async function registerRoutes(
     try {
       const id = parseInt(req.params.id);
       const product = await storage.getProduct(id);
-      
+
       if (!product) {
         return res.status(404).json({ error: "Mahsulot topilmadi" });
       }
-      
+
       res.json(product);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -202,25 +209,42 @@ export async function registerRoutes(
   app.post("/api/products", requireAdmin, galleryUpload, async (req, res) => {
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-      
+
       if (!files.image || files.image.length === 0) {
         return res.status(400).json({ error: "Rasm yuklanmadi" });
       }
 
       const mainImage = files.image[0];
-      const imagePath = mainImage.path;
-      const imageUrl = `/uploads/${mainImage.filename}`;
+      let imageUrl: string;
+      let imagePath: string | null = null;
+
+      // Cloudinary yoki lokal upload
+      if (isCloudinaryConfigured() && mainImage.buffer) {
+        const result = await uploadImage(mainImage.buffer, "lumina/products");
+        imageUrl = result.url;
+      } else {
+        imagePath = mainImage.path;
+        imageUrl = `/uploads/${mainImage.filename}`;
+      }
 
       const galleryUrls: string[] = [];
       if (files.gallery) {
         for (const file of files.gallery) {
-          galleryUrls.push(`/uploads/${file.filename}`);
+          if (isCloudinaryConfigured() && file.buffer) {
+            const result = await uploadImage(file.buffer, "lumina/gallery");
+            galleryUrls.push(result.url);
+          } else {
+            galleryUrls.push(`/uploads/${file.filename}`);
+          }
         }
       }
 
+      // AI tahlili uchun rasm yo'li yoki URL
+      const imageForAI = imagePath || imageUrl;
+
       let aiData;
       try {
-        aiData = await analyzeProductImage(imagePath);
+        aiData = await analyzeProductImage(imageForAI);
       } catch (aiError) {
         console.error("AI tahlil xatosi:", aiError);
         aiData = {
@@ -274,7 +298,7 @@ export async function registerRoutes(
     try {
       const id = parseInt(req.params.id);
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
-      
+
       const updates: any = {};
 
       if (req.body.title) updates.title = req.body.title;
@@ -303,13 +327,13 @@ export async function registerRoutes(
       if (req.body.gallery) {
         updates.gallery = JSON.parse(req.body.gallery);
       }
-      
+
       const product = await storage.updateProduct(id, updates);
-      
+
       if (!product) {
         return res.status(404).json({ error: "Mahsulot topilmadi" });
       }
-      
+
       res.json(product);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -320,11 +344,11 @@ export async function registerRoutes(
     try {
       const id = parseInt(req.params.id);
       const success = await storage.deleteProduct(id);
-      
+
       if (!success) {
         return res.status(404).json({ error: "Mahsulot topilmadi" });
       }
-      
+
       res.json({ success: true });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -343,10 +367,10 @@ export async function registerRoutes(
   app.post("/api/orders", async (req, res) => {
     try {
       const { order, items } = req.body;
-      
+
       const orderData = insertOrderSchema.parse(order);
       const createdOrder = await storage.createOrder(orderData);
-      
+
       for (const item of items) {
         const itemData = insertOrderItemSchema.parse({
           orderId: createdOrder.id,
@@ -356,7 +380,7 @@ export async function registerRoutes(
         });
         await storage.createOrderItem(itemData);
       }
-      
+
       res.json(createdOrder);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -367,13 +391,13 @@ export async function registerRoutes(
     try {
       const id = parseInt(req.params.id);
       const { status } = req.body;
-      
+
       const order = await storage.updateOrderStatus(id, status);
-      
+
       if (!order) {
         return res.status(404).json({ error: "Buyurtma topilmadi" });
       }
-      
+
       res.json(order);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -393,13 +417,13 @@ export async function registerRoutes(
     try {
       const id = parseInt(req.params.id);
       const { flashSalePrice, hours = 24 } = req.body;
-      
+
       if (!flashSalePrice || flashSalePrice <= 0) {
         return res.status(400).json({ error: "Chegirma narxini kiriting" });
       }
 
       const endsAt = new Date(Date.now() + hours * 60 * 60 * 1000);
-      
+
       let flashContent = null;
       let marketingText: string | undefined = undefined;
       try {
@@ -417,7 +441,7 @@ export async function registerRoutes(
       }
 
       const product = await storage.setFlashSale(id, flashSalePrice, endsAt, marketingText);
-      
+
       if (!product) {
         return res.status(404).json({ error: "Mahsulot topilmadi" });
       }
@@ -432,11 +456,11 @@ export async function registerRoutes(
     try {
       const id = parseInt(req.params.id);
       const product = await storage.clearFlashSale(id);
-      
+
       if (!product) {
         return res.status(404).json({ error: "Mahsulot topilmadi" });
       }
-      
+
       res.json(product);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -456,13 +480,13 @@ export async function registerRoutes(
     try {
       const productId = parseInt(req.params.productId);
       const product = await storage.getProduct(productId);
-      
+
       if (!product) {
         return res.status(404).json({ error: "Mahsulot topilmadi" });
       }
 
       const success = await postProductToTelegram(product);
-      
+
       if (success) {
         res.json({ success: true, message: "Telegram kanalga yuborildi" });
       } else {
@@ -508,7 +532,7 @@ export async function registerRoutes(
     try {
       const id = parseInt(req.params.id);
       const product = await storage.getProduct(id);
-      
+
       if (!product) {
         return res.status(404).json({ error: "Mahsulot topilmadi" });
       }

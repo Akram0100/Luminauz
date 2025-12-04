@@ -9,6 +9,7 @@ const allowlist = [
   "@google/generative-ai",
   "@neondatabase/serverless",
   "axios",
+  "cloudinary",
   "connect-pg-simple",
   "cors",
   "date-fns",
