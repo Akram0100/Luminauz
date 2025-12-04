@@ -99,7 +99,7 @@ export default function Checkout() {
             </div>
             <h1 className="text-3xl font-bold mb-4">Buyurtma Qabul Qilindi!</h1>
             <p className="text-muted-foreground mb-8">
-              Rahmat! Sizning buyurtmangiz muvaffaqiyatli qabul qilindi. 
+              Rahmat! Sizning buyurtmangiz muvaffaqiyatli qabul qilindi.
               Tez orada operatorlarimiz siz bilan bog'lanadi.
             </p>
             <Button onClick={() => setLocation("/")} className="rounded-full">
@@ -236,18 +236,40 @@ export default function Checkout() {
 
                     <Separator className="my-4" />
 
+                    {/* Minimum Order Warning */}
+                    {totalPrice < 400000 && (
+                      <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-4">
+                        <div className="flex items-start gap-3">
+                          <svg className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          <div>
+                            <p className="text-sm font-medium text-yellow-600">Minimal buyurtma summasi: {formatPrice(400000)}</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Yana {formatPrice(400000 - totalPrice)} qo'shing
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Mahsulotlar:</span>
                         <span>{items.reduce((sum, i) => sum + i.quantity, 0)} ta</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Yetkazib berish:</span>
-                        <span className="text-green-600">Bepul</span>
+                        <span className="text-muted-foreground">Mahsulotlar narxi:</span>
+                        <span>{formatPrice(totalPrice)}</span>
                       </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Yetkazib berish (Toshkent):</span>
+                        <span className="text-primary font-medium">{formatPrice(35000)}</span>
+                      </div>
+                      <Separator className="my-2" />
                       <div className="flex justify-between text-lg font-bold">
-                        <span>Jami:</span>
-                        <span className="text-primary" data-testid="text-total-price">{formatPrice(totalPrice)}</span>
+                        <span>Jami to'lov:</span>
+                        <span className="text-primary" data-testid="text-total-price">{formatPrice(totalPrice + 35000)}</span>
                       </div>
                     </div>
 
@@ -255,11 +277,11 @@ export default function Checkout() {
                     <div className="bg-secondary/50 rounded-xl p-4 space-y-3">
                       <div className="flex items-center gap-3 text-sm">
                         <Truck className="w-4 h-4 text-primary" />
-                        <span>1-3 kun ichida yetkazib beramiz</span>
+                        <span>1-2 kun ichida yetkazib beramiz</span>
                       </div>
                       <div className="flex items-center gap-3 text-sm">
                         <Phone className="w-4 h-4 text-primary" />
-                        <span>+998 71 123 45 67</span>
+                        <span>+998 99 644 84 44</span>
                       </div>
                       <div className="flex items-center gap-3 text-sm">
                         <ShieldCheck className="w-4 h-4 text-primary" />
@@ -267,16 +289,20 @@ export default function Checkout() {
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter>
+                  <CardFooter className="flex-col gap-2">
                     <Button
                       type="submit"
-                      className="w-full rounded-full bg-primary text-background font-bold"
-                      disabled={isSubmitting}
+                      className={`w-full rounded-full font-bold ${totalPrice < 400000 ? 'bg-muted text-muted-foreground cursor-not-allowed' : 'bg-primary text-background'}`}
+                      disabled={isSubmitting || totalPrice < 400000}
                       data-testid="button-submit-order"
                     >
                       {isSubmitting ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Buyurtma Yuborilmoqda...
+                        </>
+                      ) : totalPrice < 400000 ? (
+                        <>
+                          Minimal summa: {formatPrice(400000)}
                         </>
                       ) : (
                         <>
@@ -284,6 +310,11 @@ export default function Checkout() {
                         </>
                       )}
                     </Button>
+                    {totalPrice < 400000 && (
+                      <p className="text-xs text-muted-foreground text-center">
+                        Buyurtma berish uchun yana {formatPrice(400000 - totalPrice)} qo'shing
+                      </p>
+                    )}
                   </CardFooter>
                 </form>
               </Card>
