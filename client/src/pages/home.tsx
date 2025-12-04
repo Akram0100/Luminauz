@@ -275,6 +275,39 @@ export default function Home() {
         )
       }
 
+      {/* Categories Section */}
+      <section className="py-16 bg-gradient-to-b from-background to-secondary/10">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold mb-2">Kategoriyalar</h2>
+            <p className="text-muted-foreground">Bizning asosiy mahsulot turlari</p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {[
+              { name: "Elektronika", icon: "📱", color: "from-blue-500/20 to-cyan-500/20" },
+              { name: "Maishiy texnika", icon: "🔌", color: "from-green-500/20 to-emerald-500/20" },
+              { name: "Kiyim-kechak", icon: "👕", color: "from-purple-500/20 to-pink-500/20" },
+              { name: "Sport", icon: "⚽", color: "from-orange-500/20 to-red-500/20" },
+              { name: "Uy-ro'zg'or", icon: "🏠", color: "from-yellow-500/20 to-amber-500/20" },
+              { name: "Go'zallik", icon: "💄", color: "from-pink-500/20 to-rose-500/20" },
+            ].map((cat, idx) => (
+              <motion.div
+                key={cat.name}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className={`p-6 rounded-2xl bg-gradient-to-br ${cat.color} border border-border hover:border-primary/50 cursor-pointer transition-all hover:scale-105 group`}
+                onClick={() => setSelectedCategory(cat.name)}
+              >
+                <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">{cat.icon}</div>
+                <h3 className="font-semibold text-sm">{cat.name}</h3>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Features Grid */}
       <section className="py-20 border-y border-border bg-secondary/5">
         <div className="container mx-auto px-4">
