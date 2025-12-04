@@ -1,0 +1,158 @@
+Bu promt AI'ga topshiriq sifatida beriladi va u loyihani real ishlaydigan onlayn do‘konga aylantiradi, shu jumladan:
+
+To‘liq e-commerce funksiyasi
+
+AI asosida mahsulot tahlili
+
+Telegram bot + cron orqali har soatda mahsulot post qilish
+
+Kuchli marketing copywriting
+
+Real savdo strategiyasi
+
+Avtomatlashtirilgan takliflar
+
+SEO + UI optimizatsiya
+
+Arxitektura va integratsiyalarni yakunlab beradi
+
+✅ AI App uchun professional buyruq tarzidagi SUPER PROMT
+
+Buni AI’ga to‘liq kiriting — u loyiha kodini oxirigacha ishga tushadigan online do‘konga aylantiradi:
+
+SUPER PROMPT — Lumina AI E-Commerce Platform (Final Real Version)
+
+Quyidagi topshiriqlarni to‘liq bajaring. Siz ishlab chiqayotgan loyiha: “Lumina AI E-Commerce Platform” — AI yordamida mahsulotlarni tahlil qiluvchi zamonaviy onlayn do‘kon platformasi. Quyidagi barcha vazifalarni to‘liq yakunlang:
+
+1. Loyiha arxitekturasini real ishchi holatga keltiring
+
+Frontend: React 19 + TypeScript + Wouter + TanStack Query + Tailwind + shadcn/ui + Framer Motion
+
+Backend: Express.js + TypeScript + Drizzle ORM + PostgreSQL (Neon)
+
+File upload: Multer (5MB limit)
+
+AI integratsiyasi: Google Gemini 2.5 Flash (image analysis + marketing text generation)
+
+Full CRUD ishlashi kerak (products, orders, users)
+
+Ma’lumotlar bazasi sxemasini to‘liq ishlaydigan holatga optimallashtiring
+
+2. Mahsulot yuklash jarayonini AI bilan to‘liq avtomatlashtiring
+
+Rasm yuklanganda AI quyidagilarni avtomatik yaratishi shart:
+
+Title (SEO ga mos)
+
+Category
+
+20–40 so‘zli description
+
+Narx bashorati
+
+Price justification
+
+Taglar ro‘yxati
+
+Selling points
+
+Use-case ssenariylari
+
+AI tahlili products.aiAnalysis maydoniga yozilishi shart.
+
+3. Telegram bot va kanal integratsiyasini qo‘shing
+
+Bot uchun quyidagilarni avtomatlashtiring:
+
+A) Har soatda bitta mahsulot chiqaradigan cron-job
+
+Eng so‘nggi yoki tasodifiy mahsulotni tanlasin
+
+AI yordamida marketing text generatsiya qilsin
+
+Telegram kanalga rasm + caption sifatida yuborsin
+
+B) Marketing AI vazifasi
+
+Har bir post uchun AI quyidagilarni yaratishi shart:
+
+Qisqa, kuchli sarlavha (attention grabbing)
+
+2 qatorli savdo matni + kuchli CTA
+
+2 ta savdo taklifi (chegirma, bepul yetkazish, 1+1)
+
+3–5 hashtag
+
+A/B testing uchun 2 variant
+
+4. Kuchli marketing tizimi qo‘shilsin
+
+Flash-sale generator (24 soatlik chegirma)
+
+A/B testli sarlavhalar
+
+Telegram uchun high-conversion copywriter modeli
+
+SEO uchun meta description chiqarish
+
+Mahsulot tavsifida “sales psychology” qo‘llang (scarcity, urgency, social proof)
+
+5. Onlayn do‘kon funksionallari
+Foydalanuvchi uchun:
+
+Mahsulot katalogi
+
+Qidiruv + filtrlash
+
+Savatcha
+
+Checkout sahifasi
+
+Buyurtma berish formasi
+
+Light/Dark Mode
+
+Admin uchun:
+
+Rasm yuklab mahsulot qo‘shish (AI bilan)
+
+Mahsulotni tahrirlash
+
+Buyurtmalarni boshqarish (yangi / jarayonda / bajarildi)
+
+Cron loglarini ko‘rish
+
+Telegram postlar monitoringi
+
+6. To‘liq deployga tayyor real tizim bo‘lsin
+
+Frontend Vite bilan build
+
+Backend production build
+
+PostgreSQL Neon ulanishi
+
+.env strukturasini yarating
+
+CORS + token xavfsizligi
+
+Replit yoki boshqa serverga to‘liq mos bo‘lsin
+
+7. Loyiha natijasi shunday bo‘lishi shart
+
+Real ishlaydigan e-commerce platforma
+
+AI asosida to‘liq avtomatlashtirilgan mahsulot boshqaruvi
+
+Telegram bot har soatda avtomatik post qiladi
+
+Kuchli marketing tizimi integratsiyalangan
+
+Kod professional, optimallashtirilgan
+
+O‘zbek tilidagi interfeys
+
+End Prompt
+
+Ushbu topshiriqlarning barchasini bajarib, loyihani 100% ishlaydigan professional online do‘konga aylantiring.

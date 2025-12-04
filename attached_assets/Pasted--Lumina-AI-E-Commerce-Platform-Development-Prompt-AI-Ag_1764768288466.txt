@@ -1,0 +1,142 @@
+✅ Lumina AI E-Commerce Platform — Development Prompt (AI Agent uchun)
+
+Quyidagi promptni nusxalab AI assistantga tashlaysiz, u avtomatik ravishda kod yozadi, bo‘sh joylarni to‘ldiradi, tizimni kengaytiradi va siz aytgan barcha kamchiliklarni hal qiladi.
+
+🔧 AI DEVELOPMENT PROMPT
+
+“Lumina AI E-Commerce Platform” loyihasini kengaytirish va to‘liq e-commerce darajasiga olib chiqish uchun quyidagi vazifalarni ketma-ket bajaring. Mavjud kodlarni optimallashtiring, yangi modullar qo‘shing va barcha ishlarni to‘liq ishlab chiqing. Quyida talablar:
+
+1. Admin Panelni To‘liq Autentifikatsiya Qiling
+
+/admin sahifasini to‘liq yopiq holga o‘tkazing
+
+Login va Parol bilan kirish tizimi yarating
+
+Token / Session / Middleware qo‘shing
+
+isAdmin = true bo‘lgan userlargina panelga kira olsin
+
+Notog‘ri kirish – 403 sahifasi
+
+2. Mahsulot Formasiga Quyidagi Qo‘shimchalarni Yarating
+
+Mahsulot qo‘shish/yangilash formasi HOZIRDA juda qisqa → to‘liq bo‘lishi kerak.
+
+Yangi maydonlar:
+
+shortDescription – 200–300 belgilik qisqa tavsif
+
+fullDescription – uzoq, SEO-boy tavsif
+
+gallery – bir nechta rasm yuklash (multi upload)
+
+videoUrl – YouTube URL kiritish maydoni
+
+stock – ombordagi soni
+
+brand – brend nomi
+
+specs – xususiyatlar (JSON yoki dynamic list)
+
+3. Frontendda Mahsulot Sahifasini Kengaytiring
+
+Hozirda mahsulot haqida tafsilotlar yo‘q. Quyidagilarni qo‘shing:
+
+Slayder (asosiy rasm + gallery)
+
+YouTube video preview
+
+To‘liq tavsif (markdown + formatting bilan)
+
+Xususiyatlar bo‘limi (specifications table)
+
+O‘xshash mahsulotlar blok
+
+4. Telegram Postlarni Boyitish
+
+Post hozir juda oddiy.
+
+Quyidagilarni qo‘shing:
+
+Qisqa tavsif (shortDescription)
+
+To‘liq marketing text (AI-generated)
+
+Specs dan 3 ta asosiy punkt
+
+Video bo‘lsa – “📺 Video ko‘rish: link”
+
+Gallery rasmlarini Carousel tarzida yuborish (agar API ruxsat bersa)
+
+5. Flash Sale Tizimini Kuchaytirish
+
+Quyidagilarni qo‘shing:
+
+Flash Sale uchun maxsus sahifa
+
+Countdown real-time animatsiya
+
+Flash Sale uchun AI marketing matni (alohida endpoint)
+
+Flash Sale uchun maxsus rangli badge
+
+6. Qidiruvni Kuchaytirish (AI Search Optional)
+
+Ayni qidiruv juda oddiy. Uni kengaytiring:
+
+nom
+
+tags
+
+kategoriya
+
+brand
+
+narx oralig‘i filtri
+
+AI asosida “typo search” (masalan: “iphon”, “samsng” → to‘g‘ri topish)
+
+7. Backendni kengaytirish
+
+Barcha yangi maydonlar uchun schemas (Drizzle)
+
+Yangi API endpointlar
+
+Multi-upload logic (Multer)
+
+Validation (Zod)
+
+8. UI Dizaynni Yaxshilang
+
+Shadcn + Tailwind asosida:
+
+Mahsulot sahifasi premium ko‘rinishda
+
+Video preview bloki
+
+Gallery slayder
+
+Admin formalarini professional ko‘rinishda qiling
+
+9. Kodni Refaktor Qiling
+
+duplicate kodlarni tozalang
+
+reusable komponentlar yarating
+
+API xatoliklarini yaxshilang
+
+loading & empty holatlari qo‘shing
+
+10. Barcha o‘zgarishlar tugagach:
+
+npm run build sinovdan o‘tkazing
+
+Replit autoscale uchun to‘g‘ri optimizatsiya qiling
+
+Qayta deploy qilinadigan holatga keltiring
+
+🎯 “AI agent ishlashi kerak bo‘lgan maqsad”
+
+Platformani professional, funksional, zamonaviy e-commerce darajasigacha to‘liq yetkazish.
+AI integratsiya, admin panel, telegram tizimi, marketing engine – to‘liq ishlab turgan bo‘lishi shart.
