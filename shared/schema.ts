@@ -32,6 +32,7 @@ export type ProductSpec = z.infer<typeof productSpecSchema>;
 // Product Table with extended fields
 export const products = pgTable("products", {
   id: serial("id").primaryKey(),
+  slug: text("slug").unique(),
   title: text("title").notNull(),
   price: integer("price").notNull(),
   description: text("description").notNull(),

@@ -54,6 +54,18 @@ async function comparePassword(supplied: string, stored: string): Promise<boolea
   return timingSafeEqual(hashedPasswordBuf, suppliedBuf);
 }
 
+// Slug generator - SEO-friendly URL yaratish
+function generateSlug(title: string, id?: number): string {
+  const baseSlug = title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .substring(0, 50);
+  return id ? `${baseSlug}-${id}` : baseSlug;
+}
+
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (!req.session.userId) {
     return res.status(401).json({ error: "Avtorizatsiya talab qilinadi" });
@@ -180,10 +192,17 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/products/:id", async (req, res) => {
+  app.get("/api/products/:idOrSlug", async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
-      const product = await storage.getProduct(id);
+      const param = req.params.idOrSlug;
+      let product;
+
+      // Agar raqam bo'lsa - id orqali, aks holda slug orqali qidirish
+      if (/^\d+$/.test(param)) {
+        product = await storage.getProduct(parseInt(param));
+      } else {
+        product = await storage.getProductBySlug(param);
+      }
 
       if (!product) {
         return res.status(404).json({ error: "Mahsulot topilmadi" });
@@ -287,7 +306,12 @@ export async function registerRoutes(
       });
 
       const product = await storage.createProduct(productData);
-      res.json(product);
+
+      // Slug yaratish va yangilash
+      const slug = generateSlug(product.title, product.id);
+      const updatedProduct = await storage.updateProduct(product.id, { slug } as any);
+
+      res.json(updatedProduct || product);
     } catch (error: any) {
       console.error("Mahsulot yaratish xatosi:", error);
       res.status(400).json({ error: error.message });

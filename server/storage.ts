@@ -1,11 +1,11 @@
-import { 
-  users, 
-  products, 
-  orders, 
+import {
+  users,
+  products,
+  orders,
   orderItems,
   telegramLogs,
   sessions,
-  type User, 
+  type User,
   type InsertUser,
   type Product,
   type InsertProduct,
@@ -28,16 +28,17 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserAdmin(id: string, isAdmin: boolean): Promise<User | undefined>;
-  
+
   // Session methods
   createSession(session: InsertSession): Promise<Session>;
   getSession(id: string): Promise<Session | undefined>;
   deleteSession(id: string): Promise<boolean>;
   deleteExpiredSessions(): Promise<void>;
-  
+
   // Product methods
   getAllProducts(): Promise<Product[]>;
   getProduct(id: number): Promise<Product | undefined>;
+  getProductBySlug(slug: string): Promise<Product | undefined>;
   getLatestProduct(): Promise<Product | undefined>;
   getRandomUnpostedProduct(): Promise<Product | undefined>;
   getFlashSaleProducts(): Promise<Product[]>;
@@ -50,17 +51,17 @@ export interface IStorage {
   setFlashSale(id: number, flashSalePrice: number, endsAt: Date, marketingText?: string): Promise<Product | undefined>;
   clearFlashSale(id: number): Promise<Product | undefined>;
   updateProductMarketing(id: number, marketingCopy: string): Promise<Product | undefined>;
-  
+
   // Order methods
   getAllOrders(): Promise<Order[]>;
   getOrder(id: number): Promise<Order | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrderStatus(id: number, status: string): Promise<Order | undefined>;
-  
+
   // OrderItem methods
   createOrderItem(item: InsertOrderItem): Promise<OrderItem>;
   getOrderItems(orderId: number): Promise<OrderItem[]>;
-  
+
   // Telegram methods
   createTelegramLog(log: InsertTelegramLog): Promise<TelegramLog>;
   getTelegramLogs(): Promise<TelegramLog[]>;
@@ -125,6 +126,11 @@ export class DatabaseStorage implements IStorage {
 
   async getProduct(id: number): Promise<Product | undefined> {
     const [product] = await db.select().from(products).where(eq(products.id, id));
+    return product || undefined;
+  }
+
+  async getProductBySlug(slug: string): Promise<Product | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.slug, slug));
     return product || undefined;
   }
 
@@ -244,7 +250,7 @@ export class DatabaseStorage implements IStorage {
   async searchProducts(query: string): Promise<Product[]> {
     const lowercaseQuery = query.toLowerCase();
     const allProducts = await db.select().from(products).orderBy(desc(products.createdAt));
-    return allProducts.filter(p => 
+    return allProducts.filter(p =>
       p.title.toLowerCase().includes(lowercaseQuery) ||
       p.description.toLowerCase().includes(lowercaseQuery) ||
       p.category.toLowerCase().includes(lowercaseQuery) ||
@@ -255,11 +261,11 @@ export class DatabaseStorage implements IStorage {
 
   async advancedSearchProducts(filters: ProductSearchFilters): Promise<Product[]> {
     let allProducts = await db.select().from(products).orderBy(desc(products.createdAt));
-    
+
     if (filters.query) {
       const query = filters.query.toLowerCase();
       const typoVariants = this.generateTypoVariants(query);
-      
+
       allProducts = allProducts.filter(p => {
         const searchableText = [
           p.title,
@@ -269,40 +275,40 @@ export class DatabaseStorage implements IStorage {
           p.shortDescription,
           ...(p.tags || [])
         ].filter(Boolean).join(' ').toLowerCase();
-        
+
         return typoVariants.some(variant => searchableText.includes(variant)) ||
-               this.levenshteinMatch(query, searchableText, 2);
+          this.levenshteinMatch(query, searchableText, 2);
       });
     }
-    
+
     if (filters.category) {
-      allProducts = allProducts.filter(p => 
+      allProducts = allProducts.filter(p =>
         p.category.toLowerCase() === filters.category!.toLowerCase()
       );
     }
-    
+
     if (filters.brand) {
-      allProducts = allProducts.filter(p => 
+      allProducts = allProducts.filter(p =>
         p.brand && p.brand.toLowerCase() === filters.brand!.toLowerCase()
       );
     }
-    
+
     if (filters.tags && filters.tags.length > 0) {
-      allProducts = allProducts.filter(p => 
-        p.tags && filters.tags!.some(tag => 
+      allProducts = allProducts.filter(p =>
+        p.tags && filters.tags!.some(tag =>
           p.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase())
         )
       );
     }
-    
+
     if (filters.minPrice !== undefined) {
       allProducts = allProducts.filter(p => p.price >= filters.minPrice!);
     }
-    
+
     if (filters.maxPrice !== undefined) {
       allProducts = allProducts.filter(p => p.price <= filters.maxPrice!);
     }
-    
+
     return allProducts;
   }
 
@@ -317,7 +323,7 @@ export class DatabaseStorage implements IStorage {
       'ph': ['f'],
       'ck': ['k'],
     };
-    
+
     for (const [char, typos] of Object.entries(commonTypos)) {
       if (query.includes(char)) {
         for (const typo of typos) {
@@ -325,7 +331,7 @@ export class DatabaseStorage implements IStorage {
         }
       }
     }
-    
+
     return variants;
   }
 
@@ -367,7 +373,7 @@ export class DatabaseStorage implements IStorage {
   async setFlashSale(id: number, flashSalePrice: number, endsAt: Date, marketingText?: string): Promise<Product | undefined> {
     const [updated] = await db
       .update(products)
-      .set({ 
+      .set({
         isFlashSale: true,
         flashSalePrice: flashSalePrice,
         flashSaleEnds: endsAt,
@@ -381,7 +387,7 @@ export class DatabaseStorage implements IStorage {
   async clearFlashSale(id: number): Promise<Product | undefined> {
     const [updated] = await db
       .update(products)
-      .set({ 
+      .set({
         isFlashSale: false,
         flashSalePrice: null,
         flashSaleEnds: null,

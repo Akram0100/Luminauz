@@ -9,12 +9,12 @@ import { useCart } from "@/hooks/use-cart";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
-import { 
-  ShoppingCart, 
-  Check, 
-  Flame, 
-  Timer, 
-  Zap, 
+import {
+  ShoppingCart,
+  Check,
+  Flame,
+  Timer,
+  Zap,
   TrendingDown,
   Clock,
   ArrowRight
@@ -30,7 +30,7 @@ function AnimatedCountdown({ endsAt }: { endsAt: Date }) {
     const calculateTimeLeft = () => {
       const diff = new Date(endsAt).getTime() - Date.now();
       if (diff <= 0) return { hours: 0, minutes: 0, seconds: 0 };
-      
+
       return {
         hours: Math.floor(diff / (1000 * 60 * 60)),
         minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
@@ -70,13 +70,13 @@ function AnimatedCountdown({ endsAt }: { endsAt: Date }) {
   );
 }
 
-function FlashSaleCard({ product, onAddToCart, isAdded }: { 
-  product: Product; 
+function FlashSaleCard({ product, onAddToCart, isAdded }: {
+  product: Product;
   onAddToCart: () => void;
   isAdded: boolean;
 }) {
-  const discount = product.flashSalePrice 
-    ? Math.round(((product.price - product.flashSalePrice) / product.price) * 100) 
+  const discount = product.flashSalePrice
+    ? Math.round(((product.price - product.flashSalePrice) / product.price) * 100)
     : 0;
 
   return (
@@ -105,14 +105,14 @@ function FlashSaleCard({ product, onAddToCart, isAdded }: {
           </div>
         </div>
 
-        <Link href={`/product/${product.id}`} data-testid={`link-flash-sale-${product.id}`}>
+        <Link href={`/product/${product.slug || product.id}`} data-testid={`link-flash-sale-${product.id}`}>
           <div className="aspect-square overflow-hidden relative pt-10">
-            <img 
-              src={product.imageUrl} 
+            <img
+              src={product.imageUrl}
               alt={product.title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
-            
+
             <div className="absolute top-12 right-3">
               <Badge className="bg-red-500 text-white text-lg px-3 py-1 shadow-lg">
                 <TrendingDown className="w-4 h-4 mr-1" />
@@ -127,7 +127,7 @@ function FlashSaleCard({ product, onAddToCart, isAdded }: {
         <CardContent className="p-5 space-y-4">
           <div>
             <Badge variant="secondary" className="text-xs mb-2">{product.category}</Badge>
-            <Link href={`/product/${product.id}`}>
+            <Link href={`/product/${product.slug || product.id}`}>
               <h3 className="font-bold text-lg group-hover:text-primary transition-colors line-clamp-2">
                 {product.title}
               </h3>
@@ -154,10 +154,9 @@ function FlashSaleCard({ product, onAddToCart, isAdded }: {
           )}
 
           <div className="flex gap-3">
-            <Button 
-              className={`flex-1 transition-colors ${
-                isAdded ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
-              }`}
+            <Button
+              className={`flex-1 transition-colors ${isAdded ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
+                }`}
               onClick={(e) => {
                 e.preventDefault();
                 onAddToCart();
@@ -171,7 +170,7 @@ function FlashSaleCard({ product, onAddToCart, isAdded }: {
               )}
             </Button>
             <Button variant="outline" asChild>
-              <Link href={`/product/${product.id}`} data-testid={`link-details-${product.id}`}>
+              <Link href={`/product/${product.slug || product.id}`} data-testid={`link-details-${product.id}`}>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </Button>
@@ -211,10 +210,10 @@ export default function FlashSalesPage() {
 
   const nearestEndTime = products.length > 0
     ? products.reduce((nearest, p) => {
-        if (!p.flashSaleEnds) return nearest;
-        const ends = new Date(p.flashSaleEnds).getTime();
-        return ends < nearest ? ends : nearest;
-      }, Infinity)
+      if (!p.flashSaleEnds) return nearest;
+      const ends = new Date(p.flashSaleEnds).getTime();
+      return ends < nearest ? ends : nearest;
+    }, Infinity)
     : null;
 
   return (
@@ -222,7 +221,7 @@ export default function FlashSalesPage() {
       <div className="min-h-screen bg-gradient-to-b from-background via-red-500/5 to-background">
         <section className="relative py-16 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent" />
-          
+
           <div className="container mx-auto px-4 relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
