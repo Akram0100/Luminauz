@@ -298,7 +298,10 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 className={`p-6 rounded-2xl bg-gradient-to-br ${cat.color} border border-border hover:border-primary/50 cursor-pointer transition-all hover:scale-105 group`}
-                onClick={() => setSelectedCategory(cat.name)}
+                onClick={() => {
+                  setSelectedCategory(cat.name);
+                  setTimeout(() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' }), 100);
+                }}
               >
                 <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">{cat.icon}</div>
                 <h3 className="font-semibold text-sm">{cat.name}</h3>
@@ -384,7 +387,7 @@ export default function Home() {
       </section>
 
       {/* Product Grid */}
-      <section className="py-24">
+      <section id="products" className="py-24">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between gap-4 mb-12">
             <h2 className="text-3xl font-bold">Tanlangan Texnologiyalar</h2>
