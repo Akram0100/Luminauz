@@ -35,6 +35,11 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
+// Trust Render's reverse proxy for secure cookies
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "lumina-ai-secret-key-change-in-production",
