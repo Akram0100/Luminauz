@@ -21,11 +21,11 @@ function CountdownTimer({ endsAt }: { endsAt: Date }) {
     const calculateTimeLeft = () => {
       const diff = new Date(endsAt).getTime() - Date.now();
       if (diff <= 0) return "Tugadi";
-      
+
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      
+
       return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
     };
 
@@ -40,7 +40,7 @@ function CountdownTimer({ endsAt }: { endsAt: Date }) {
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  
+
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["products"],
     queryFn: getProducts,
@@ -59,7 +59,7 @@ export default function Home() {
   const categories = Array.from(new Set(products.map(p => p.category)));
 
   const filteredProducts = products.filter(p => {
-    const matchesSearch = searchQuery === "" || 
+    const matchesSearch = searchQuery === "" ||
       p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = !selectedCategory || p.category === selectedCategory;
@@ -96,109 +96,184 @@ export default function Home() {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 lg:py-32">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
-        
+      <section className="relative overflow-hidden py-16 lg:py-24">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-3xl opacity-50" />
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-accent/10 rounded-full blur-3xl opacity-40" />
+
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <Badge variant="outline" className="mb-6 border-primary/50 text-primary bg-primary/10 backdrop-blur-md px-4 py-1.5 text-sm">
-                <Star className="w-4 h-4 mr-2" />
-                Premium Texnologiyalar Do'koni
+              <Badge variant="outline" className="mb-4 border-primary/50 text-primary bg-primary/10 backdrop-blur-md px-4 py-1.5 text-sm">
+                <Zap className="w-4 h-4 mr-2" />
+                #1 Online Do'kon O'zbekistonda
               </Badge>
-              <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-                Eng Yaxshi <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent glow-text">
-                  Texnologiyalar
+
+              <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
+                Sifatli Mahsulotlar{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-400 to-accent">
+                  Arzon Narxlarda
                 </span>
               </h1>
-              <p className="text-xl text-muted-foreground mb-8 max-w-xl">
-                Premium sifatli mahsulotlar, arzon narxlar va tezkor yetkazib berish. Siz uchun eng yaxshi tanlovlar.
+
+              <p className="text-lg text-muted-foreground mb-8 max-w-xl leading-relaxed">
+                Minglab mijozlar ishonchini qozongan do'kon. Premium sifat, tezkor yetkazib berish va 100% kafolat.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Button 
-                  size="lg" 
-                  className="bg-primary text-background hover:bg-primary/90 font-bold px-8 h-12 rounded-full shadow-[0_0_20px_-5px_var(--color-primary)]"
+
+              <div className="flex flex-wrap gap-4 mb-8">
+                <Button
+                  size="lg"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold px-8 h-14 rounded-full shadow-lg shadow-primary/25"
                   onClick={() => setLocation("/checkout")}
                   data-testid="button-start-shopping"
                 >
-                  Xaridni Boshlash <ArrowRight className="ml-2 w-4 h-4" />
+                  <ShoppingCart className="mr-2 w-5 h-5" />
+                  Xarid Qilish
                 </Button>
-                <Button size="lg" variant="outline" className="h-12 rounded-full border-primary/20 hover:bg-primary/5">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-14 rounded-full border-2 hover:bg-primary/5"
+                  onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
+                >
                   Katalogni Ko'rish
+                  <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
+              </div>
+
+              {/* Trust Stats */}
+              <div className="grid grid-cols-3 gap-6">
+                <div className="text-center lg:text-left">
+                  <div className="text-2xl lg:text-3xl font-bold text-primary">5000+</div>
+                  <div className="text-sm text-muted-foreground">Xaridorlar</div>
+                </div>
+                <div className="text-center lg:text-left">
+                  <div className="text-2xl lg:text-3xl font-bold text-primary">99%</div>
+                  <div className="text-sm text-muted-foreground">Mamnuniyat</div>
+                </div>
+                <div className="text-center lg:text-left">
+                  <div className="text-2xl lg:text-3xl font-bold text-primary">24/7</div>
+                  <div className="text-sm text-muted-foreground">Qo'llab-quvvatlash</div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right Image/Cards */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative hidden lg:block"
+            >
+              <div className="relative w-full aspect-square max-w-md mx-auto">
+                {/* Floating Cards */}
+                <div className="absolute top-10 left-0 p-4 bg-card/80 backdrop-blur-lg rounded-2xl border border-border shadow-xl animate-bounce" style={{ animationDuration: '3s' }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <Check className="w-5 h-5 text-green-500" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm">Buyurtma tasdiqlandi</div>
+                      <div className="text-xs text-muted-foreground">Hozirgina</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="absolute bottom-20 right-0 p-4 bg-card/80 backdrop-blur-lg rounded-2xl border border-border shadow-xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                      <Truck className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm">Bepul yetkazish</div>
+                      <div className="text-xs text-muted-foreground">Barcha buyurtmalarga</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-primary/30 to-accent/30 rounded-full blur-2xl" />
+
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-8 bg-card/50 backdrop-blur-xl rounded-3xl border border-primary/20 shadow-2xl">
+                  <Star className="w-16 h-16 text-primary mx-auto mb-4" />
+                  <div className="text-center">
+                    <div className="text-3xl font-bold">Lumina</div>
+                    <div className="text-muted-foreground">Premium Do'kon</div>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
-        
-        <div className="absolute -right-20 top-20 w-[500px] h-[500px] bg-accent/20 rounded-full blur-3xl opacity-30 animate-pulse" />
-      </section>
+      </section >
 
       {/* Flash Sales Section */}
-      {flashSales.length > 0 && (
-        <section className="py-12 bg-gradient-to-r from-red-500/10 via-orange-500/10 to-yellow-500/10 border-y border-red-500/20">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-2 rounded-full bg-red-500/20">
-                <Flame className="w-6 h-6 text-red-500 animate-pulse" />
+      {
+        flashSales.length > 0 && (
+          <section className="py-12 bg-gradient-to-r from-red-500/10 via-orange-500/10 to-yellow-500/10 border-y border-red-500/20">
+            <div className="container mx-auto px-4">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-2 rounded-full bg-red-500/20">
+                  <Flame className="w-6 h-6 text-red-500 animate-pulse" />
+                </div>
+                <h2 className="text-2xl font-bold">Flash Sale - Tezkor Chegirma!</h2>
+                <Badge variant="destructive" className="animate-pulse">
+                  <Timer className="w-3 h-3 mr-1" /> Cheklangan Vaqt
+                </Badge>
               </div>
-              <h2 className="text-2xl font-bold">Flash Sale - Tezkor Chegirma!</h2>
-              <Badge variant="destructive" className="animate-pulse">
-                <Timer className="w-3 h-3 mr-1" /> Cheklangan Vaqt
-              </Badge>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {flashSales.map((product) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="group relative rounded-2xl overflow-hidden bg-card border-2 border-red-500/50 hover:border-red-500 transition-all"
-                >
-                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-red-500 to-orange-500 text-white text-center py-1 text-sm font-bold z-10">
-                    <Timer className="w-3 h-3 inline mr-1" />
-                    {product.flashSaleEnds && <CountdownTimer endsAt={new Date(product.flashSaleEnds)} />}
-                  </div>
-                  
-                  <div className="aspect-square overflow-hidden relative pt-8">
-                    <img 
-                      src={product.imageUrl} 
-                      alt={product.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-10 right-2">
-                      <Badge className="bg-red-500 text-white">
-                        -{Math.round(((product.price - (product.flashSalePrice || 0)) / product.price) * 100)}%
-                      </Badge>
-                    </div>
-                  </div>
 
-                  <div className="p-4">
-                    <h3 className="font-bold text-lg mb-2 truncate">{product.title}</h3>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-2xl font-bold text-red-500">{formatPrice(product.flashSalePrice || 0)}</span>
-                      <span className="text-sm text-muted-foreground line-through">{formatPrice(product.price)}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {flashSales.map((product) => (
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="group relative rounded-2xl overflow-hidden bg-card border-2 border-red-500/50 hover:border-red-500 transition-all"
+                  >
+                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-red-500 to-orange-500 text-white text-center py-1 text-sm font-bold z-10">
+                      <Timer className="w-3 h-3 inline mr-1" />
+                      {product.flashSaleEnds && <CountdownTimer endsAt={new Date(product.flashSaleEnds)} />}
                     </div>
-                    <Button 
-                      className="w-full bg-red-500 hover:bg-red-600 text-white"
-                      onClick={() => handleAddToCart(product)}
-                      data-testid={`button-flash-sale-${product.id}`}
-                    >
-                      <ShoppingCart className="w-4 h-4 mr-2" /> Sotib Olish
-                    </Button>
-                  </div>
-                </motion.div>
-              ))}
+
+                    <div className="aspect-square overflow-hidden relative pt-8">
+                      <img
+                        src={product.imageUrl}
+                        alt={product.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-10 right-2">
+                        <Badge className="bg-red-500 text-white">
+                          -{Math.round(((product.price - (product.flashSalePrice || 0)) / product.price) * 100)}%
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div className="p-4">
+                      <h3 className="font-bold text-lg mb-2 truncate">{product.title}</h3>
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-2xl font-bold text-red-500">{formatPrice(product.flashSalePrice || 0)}</span>
+                        <span className="text-sm text-muted-foreground line-through">{formatPrice(product.price)}</span>
+                      </div>
+                      <Button
+                        className="w-full bg-red-500 hover:bg-red-600 text-white"
+                        onClick={() => handleAddToCart(product)}
+                        data-testid={`button-flash-sale-${product.id}`}
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" /> Sotib Olish
+                      </Button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        )
+      }
 
       {/* Features Grid */}
       <section className="py-20 border-y border-border bg-secondary/5">
@@ -247,7 +322,7 @@ export default function Home() {
                 data-testid="input-search"
               />
             </div>
-            
+
             <div className="flex flex-wrap gap-2">
               <Button
                 variant={selectedCategory === null ? "default" : "outline"}
@@ -315,13 +390,13 @@ export default function Home() {
                 >
                   <Link href={`/product/${product.id}`} data-testid={`link-product-${product.id}`}>
                     <div className="aspect-square overflow-hidden relative">
-                      <img 
-                        src={product.imageUrl} 
+                      <img
+                        src={product.imageUrl}
                         alt={product.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent opacity-60" />
-                      
+
                       <div className="absolute top-3 right-3">
                         {product.isFlashSale ? (
                           <Badge className="bg-red-500 text-white">
@@ -345,7 +420,7 @@ export default function Home() {
                         {product.title}
                       </h3>
                     </Link>
-                    
+
                     {product.tags && product.tags.length > 0 && (
                       <div className="mb-4 space-y-1">
                         <div className="flex flex-wrap gap-1">
@@ -365,15 +440,14 @@ export default function Home() {
                           <span className="text-sm text-muted-foreground line-through">{formatPrice(product.price)}</span>
                         )}
                       </div>
-                      <Button 
-                        size="sm" 
-                        className={`rounded-full transition-colors ${
-                          addedItems.has(product.id) 
-                            ? "bg-green-500 text-white" 
-                            : isInCart(product.id)
+                      <Button
+                        size="sm"
+                        className={`rounded-full transition-colors ${addedItems.has(product.id)
+                          ? "bg-green-500 text-white"
+                          : isInCart(product.id)
                             ? "bg-primary/20 text-primary"
                             : "bg-secondary hover:bg-primary hover:text-background"
-                        }`}
+                          }`}
                         onClick={() => handleAddToCart(product)}
                         data-testid={`button-add-to-cart-${product.id}`}
                       >
@@ -391,6 +465,6 @@ export default function Home() {
           )}
         </div>
       </section>
-    </Layout>
+    </Layout >
   );
 }
