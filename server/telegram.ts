@@ -58,9 +58,9 @@ export async function postProductToTelegram(product: Product): Promise<boolean> 
     });
 
     const caption = formatTelegramCaption(product, marketing);
-    
+
     const fullImageUrl = getFullImageUrl(product.imageUrl);
-    
+
     const result = await sendTelegramPhoto(fullImageUrl, caption);
 
     if (result.ok) {
@@ -72,23 +72,23 @@ export async function postProductToTelegram(product: Product): Promise<boolean> 
         marketingVariantB: marketing.variantB,
         status: "sent",
       };
-      
+
       await storage.createTelegramLog(logEntry);
-      await storage.updateProduct(product.id, { 
-        telegramPostedAt: new Date() 
+      await storage.updateProduct(product.id, {
+        telegramPostedAt: new Date()
       } as any);
-      
+
       console.log(`Product ${product.id} posted to Telegram successfully`);
       return true;
     } else {
       console.error("Failed to post to Telegram:", result.description);
-      
+
       await storage.createTelegramLog({
         productId: product.id,
         caption: caption,
         status: "failed",
       });
-      
+
       return false;
     }
   } catch (error) {
@@ -107,12 +107,12 @@ function formatTelegramCaption(
 
   const brandText = product.brand ? `\n🏷 Brend: ${product.brand}` : "";
   const shortDesc = product.shortDescription ? `\n\n${product.shortDescription}` : "";
-  const stockText = product.stock !== null && product.stock !== undefined && product.stock > 0 
-    ? `\n📦 Omborda: ${product.stock} dona` 
-    : product.stock === 0 
-    ? "\n⚠️ Tugagan" 
-    : "";
-  
+  const stockText = product.stock !== null && product.stock !== undefined && product.stock > 0
+    ? `\n📦 Omborda: ${product.stock} dona`
+    : product.stock === 0
+      ? "\n⚠️ Tugagan"
+      : "";
+
   const videoText = product.videoUrl ? `\n\n🎬 <a href="${product.videoUrl}">Videoni Ko'rish</a>` : "";
 
   return `${marketing.headline}
@@ -134,17 +134,22 @@ ${marketing.hashtags.join(" ")}
 }
 
 function getFullImageUrl(imageUrl: string): string {
-  const domain = process.env.REPLIT_DEV_DOMAIN || process.env.REPLIT_DOMAINS?.split(",")[0] || "localhost:5000";
-  const protocol = domain.includes("localhost") ? "http" : "https";
-  return `${protocol}://${domain}${imageUrl}`;
+  // Agar Cloudinary URL bo'lsa, to'g'ridan-to'g'ri qaytarish
+  if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+    return imageUrl;
+  }
+
+  // Render domain yoki custom domain
+  const domain = process.env.RENDER_EXTERNAL_URL || "https://luminauz.onrender.com";
+  return `${domain}${imageUrl}`;
 }
 
 export async function runHourlyCronJob(): Promise<void> {
   console.log("[CRON] Starting hourly Telegram post job...");
-  
+
   try {
     const product = await storage.getRandomUnpostedProduct();
-    
+
     if (!product) {
       const latestProduct = await storage.getLatestProduct();
       if (latestProduct) {
@@ -169,7 +174,7 @@ export function startCronJob(): void {
   }
 
   console.log("[CRON] Starting hourly cron job...");
-  
+
   cronInterval = setInterval(async () => {
     await runHourlyCronJob();
   }, 60 * 60 * 1000);
