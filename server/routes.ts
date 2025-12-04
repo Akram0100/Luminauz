@@ -197,11 +197,21 @@ export async function registerRoutes(
       const param = req.params.idOrSlug;
       let product;
 
-      // Agar raqam bo'lsa - id orqali, aks holda slug orqali qidirish
+      // Agar raqam bo'lsa - id orqali qidirish
       if (/^\d+$/.test(param)) {
         product = await storage.getProduct(parseInt(param));
       } else {
+        // Slug orqali qidirish
         product = await storage.getProductBySlug(param);
+
+        // Agar topilmasa, oxirgi raqamni ajratib ID sifatida tekshirish
+        // Masalan: "yangi-mahsulot-8" -> id=8
+        if (!product) {
+          const idMatch = param.match(/-(\d+)$/);
+          if (idMatch) {
+            product = await storage.getProduct(parseInt(idMatch[1]));
+          }
+        }
       }
 
       if (!product) {
