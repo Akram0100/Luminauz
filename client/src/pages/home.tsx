@@ -390,7 +390,7 @@ export default function Home() {
       <section id="products" className="py-24">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between gap-4 mb-12">
-            <h2 className="text-3xl font-bold">Tanlangan Texnologiyalar</h2>
+            <h2 className="text-3xl font-bold">Tanlangan Mahsulotlar</h2>
             <span className="text-muted-foreground">{filteredProducts.length} ta mahsulot</span>
           </div>
 
