@@ -135,6 +135,25 @@ export const insertPromoCodeSchema = createInsertSchema(promoCodes).omit({
 export type InsertPromoCode = z.infer<typeof insertPromoCodeSchema>;
 export type PromoCode = typeof promoCodes.$inferSelect;
 
+// Customers Table (Foydalanuvchi akkaunti)
+export const customers = pgTable("customers", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  password: text("password").notNull(),
+  name: text("name").notNull(),
+  phone: text("phone"),
+  address: text("address"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCustomerSchema = createInsertSchema(customers).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertCustomer = z.infer<typeof insertCustomerSchema>;
+export type Customer = typeof customers.$inferSelect;
+
 // Order Table
 export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),

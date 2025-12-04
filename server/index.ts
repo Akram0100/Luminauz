@@ -22,6 +22,7 @@ declare module "express-session" {
     userId: string;
     isAdmin: boolean;
     username: string;
+    customerId: number;
   }
 }
 

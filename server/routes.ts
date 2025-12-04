@@ -596,6 +596,105 @@ export async function registerRoutes(
     }
   });
 
+  // Customer API (Foydalanuvchi akkaunti)
+  app.post("/api/customer/register", async (req, res) => {
+    try {
+      const { email, password, name, phone, address } = req.body;
+
+      if (!email || !password || !name) {
+        return res.status(400).json({ error: "Email, parol va ism talab qilinadi" });
+      }
+
+      const existing = await storage.getCustomerByEmail(email);
+      if (existing) {
+        return res.status(400).json({ error: "Bu email allaqachon ro'yxatdan o'tgan" });
+      }
+
+      const passwordHash = await hashPassword(password);
+      const customer = await storage.createCustomer({
+        email,
+        password: passwordHash,
+        name,
+        phone: phone || null,
+        address: address || null,
+      });
+
+      // Session yaratish
+      req.session.customerId = customer.id;
+
+      res.json({ id: customer.id, email: customer.email, name: customer.name });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/customer/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        return res.status(400).json({ error: "Email va parol talab qilinadi" });
+      }
+
+      const customer = await storage.getCustomerByEmail(email);
+      if (!customer) {
+        return res.status(401).json({ error: "Email yoki parol noto'g'ri" });
+      }
+
+      const isValid = await comparePassword(password, customer.password);
+      if (!isValid) {
+        return res.status(401).json({ error: "Email yoki parol noto'g'ri" });
+      }
+
+      req.session.customerId = customer.id;
+
+      res.json({ id: customer.id, email: customer.email, name: customer.name });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/customer/profile", async (req, res) => {
+    try {
+      if (!req.session.customerId) {
+        return res.status(401).json({ error: "Kirish talab qilinadi" });
+      }
+
+      const customer = await storage.getCustomer(req.session.customerId);
+      if (!customer) {
+        return res.status(404).json({ error: "Foydalanuvchi topilmadi" });
+      }
+
+      res.json({
+        id: customer.id,
+        email: customer.email,
+        name: customer.name,
+        phone: customer.phone,
+        address: customer.address,
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/customer/logout", async (req, res) => {
+    req.session.customerId = undefined;
+    res.json({ success: true });
+  });
+
+  app.get("/api/customer/orders", async (req, res) => {
+    try {
+      if (!req.session.customerId) {
+        return res.status(401).json({ error: "Kirish talab qilinadi" });
+      }
+
+      const orders = await storage.getCustomerOrders(req.session.customerId);
+      res.json(orders);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Promo Code API
   app.post("/api/promo/validate", async (req, res) => {
     try {

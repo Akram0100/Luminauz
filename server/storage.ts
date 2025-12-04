@@ -6,6 +6,7 @@ import {
   telegramLogs,
   sessions,
   promoCodes,
+  customers,
   type User,
   type InsertUser,
   type Product,
@@ -20,6 +21,8 @@ import {
   type InsertSession,
   type PromoCode,
   type InsertPromoCode,
+  type Customer,
+  type InsertCustomer,
   type ProductSearchFilters
 } from "@shared/schema";
 import { db } from "./db";
@@ -75,6 +78,12 @@ export interface IStorage {
   createPromoCode(promo: InsertPromoCode): Promise<PromoCode>;
   deletePromoCode(id: number): Promise<boolean>;
   incrementPromoUsage(id: number): Promise<void>;
+
+  // Customer methods
+  getCustomer(id: number): Promise<Customer | undefined>;
+  getCustomerByEmail(email: string): Promise<Customer | undefined>;
+  createCustomer(customer: InsertCustomer): Promise<Customer>;
+  getCustomerOrders(customerId: number): Promise<Order[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -458,6 +467,27 @@ export class DatabaseStorage implements IStorage {
     await db.update(promoCodes)
       .set({ usedCount: sql`${promoCodes.usedCount} + 1` })
       .where(eq(promoCodes.id, id));
+  }
+
+  // Customer methods
+  async getCustomer(id: number): Promise<Customer | undefined> {
+    const [customer] = await db.select().from(customers).where(eq(customers.id, id));
+    return customer || undefined;
+  }
+
+  async getCustomerByEmail(email: string): Promise<Customer | undefined> {
+    const [customer] = await db.select().from(customers).where(eq(customers.email, email));
+    return customer || undefined;
+  }
+
+  async createCustomer(customer: InsertCustomer): Promise<Customer> {
+    const [newCustomer] = await db.insert(customers).values(customer as any).returning();
+    return newCustomer;
+  }
+
+  async getCustomerOrders(customerId: number): Promise<Order[]> {
+    // TODO: orders tablega customerId qo'shish kerak
+    return await db.select().from(orders).orderBy(desc(orders.createdAt));
   }
 }
 
