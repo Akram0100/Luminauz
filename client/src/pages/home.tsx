@@ -424,7 +424,7 @@ export default function Home() {
                   transition={{ delay: idx * 0.1 }}
                   className="group relative rounded-2xl overflow-hidden bg-card border border-border hover:border-primary/50 transition-all duration-300"
                 >
-                  <Link href={`/product/${product.slug || product.id}`} data-testid={`link-product-${product.id}`}>
+                  <Link href={`/product/${product.slug?.trim() || product.id}`} data-testid={`link-product-${product.id}`}>
                     <div className="aspect-square overflow-hidden relative">
                       <img
                         src={product.imageUrl}
@@ -451,7 +451,7 @@ export default function Home() {
                     <div className="text-xs text-primary mb-2 font-medium tracking-wider uppercase">
                       {product.category}
                     </div>
-                    <Link href={`/product/${product.slug || product.id}`}>
+                    <Link href={`/product/${product.slug?.trim() || product.id}`}>
                       <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors cursor-pointer">
                         {product.title}
                       </h3>

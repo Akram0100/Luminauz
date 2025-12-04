@@ -238,7 +238,7 @@ function RelatedProducts({ productId }: { productId: number }) {
         {products.map((product) => (
           <Link
             key={product.id}
-            href={`/product/${product.slug || product.id}`}
+            href={`/product/${product.slug?.trim() || product.id}`}
             className="group rounded-xl overflow-hidden bg-card border border-border hover:border-primary/50 transition-colors"
             data-testid={`link-related-${product.id}`}
           >
