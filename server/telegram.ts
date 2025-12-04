@@ -101,9 +101,13 @@ function formatTelegramCaption(
   product: Product,
   marketing: { headline: string; salesText: string; cta: string; offers: string[]; hashtags: string[] }
 ): string {
+  const baseUrl = "https://luminauz.onrender.com";
+  const productUrl = `${baseUrl}/product/${product.id}`;
+
+  const priceFormatted = product.price.toLocaleString('uz-UZ');
   const flashSaleText = product.isFlashSale && product.flashSalePrice
-    ? `\n💥 <s>$${product.price}</s> <b>$${product.flashSalePrice}</b> CHEGIRMA!`
-    : `💰 <b>$${product.price}</b>`;
+    ? `\n💥 <s>${priceFormatted} so'm</s> <b>${product.flashSalePrice.toLocaleString('uz-UZ')} so'm</b> CHEGIRMA!`
+    : `💰 <b>${priceFormatted} so'm</b>`;
 
   const brandText = product.brand ? `\n🏷 Brend: ${product.brand}` : "";
   const shortDesc = product.shortDescription ? `\n\n${product.shortDescription}` : "";
@@ -129,8 +133,9 @@ ${marketing.cta}${videoText}
 
 ${marketing.hashtags.join(" ")}
 
-🛒 Buyurtma: @LuminaShop_bot
-🌐 Website: lumina.shop`;
+🛒 <a href="${productUrl}">Sotib Olish</a>
+📞 Aloqa: +998 99 644 84 44
+🌐 <a href="${baseUrl}">luminauz.onrender.com</a>`;
 }
 
 function getFullImageUrl(imageUrl: string): string {
