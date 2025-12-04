@@ -112,6 +112,29 @@ export const insertSessionSchema = createInsertSchema(sessions).omit({
 export type InsertSession = z.infer<typeof insertSessionSchema>;
 export type Session = typeof sessions.$inferSelect;
 
+// Promo Codes Table
+export const promoCodes = pgTable("promo_codes", {
+  id: serial("id").primaryKey(),
+  code: text("code").notNull().unique(),
+  discountPercent: integer("discount_percent"), // Foizda chegirma (masalan: 10 = 10%)
+  discountAmount: integer("discount_amount"), // So'mda chegirma (masalan: 50000)
+  minOrderAmount: integer("min_order_amount").default(0), // Minimal buyurtma summasi
+  maxUses: integer("max_uses"), // Maksimal ishlatish soni
+  usedCount: integer("used_count").default(0).notNull(),
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPromoCodeSchema = createInsertSchema(promoCodes).omit({
+  id: true,
+  usedCount: true,
+  createdAt: true,
+});
+
+export type InsertPromoCode = z.infer<typeof insertPromoCodeSchema>;
+export type PromoCode = typeof promoCodes.$inferSelect;
+
 // Order Table
 export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),

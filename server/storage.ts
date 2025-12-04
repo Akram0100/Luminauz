@@ -5,6 +5,7 @@ import {
   orderItems,
   telegramLogs,
   sessions,
+  promoCodes,
   type User,
   type InsertUser,
   type Product,
@@ -17,6 +18,8 @@ import {
   type InsertTelegramLog,
   type Session,
   type InsertSession,
+  type PromoCode,
+  type InsertPromoCode,
   type ProductSearchFilters
 } from "@shared/schema";
 import { db } from "./db";
@@ -65,6 +68,13 @@ export interface IStorage {
   // Telegram methods
   createTelegramLog(log: InsertTelegramLog): Promise<TelegramLog>;
   getTelegramLogs(): Promise<TelegramLog[]>;
+
+  // PromoCode methods
+  getAllPromoCodes(): Promise<PromoCode[]>;
+  getPromoCodeByCode(code: string): Promise<PromoCode | undefined>;
+  createPromoCode(promo: InsertPromoCode): Promise<PromoCode>;
+  deletePromoCode(id: number): Promise<boolean>;
+  incrementPromoUsage(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -422,6 +432,32 @@ export class DatabaseStorage implements IStorage {
       .from(telegramLogs)
       .orderBy(desc(telegramLogs.createdAt))
       .limit(50);
+  }
+
+  // PromoCode methods
+  async getAllPromoCodes(): Promise<PromoCode[]> {
+    return await db.select().from(promoCodes).orderBy(desc(promoCodes.createdAt));
+  }
+
+  async getPromoCodeByCode(code: string): Promise<PromoCode | undefined> {
+    const [promo] = await db.select().from(promoCodes).where(eq(promoCodes.code, code));
+    return promo || undefined;
+  }
+
+  async createPromoCode(promo: InsertPromoCode): Promise<PromoCode> {
+    const [newPromo] = await db.insert(promoCodes).values(promo as any).returning();
+    return newPromo;
+  }
+
+  async deletePromoCode(id: number): Promise<boolean> {
+    const result = await db.delete(promoCodes).where(eq(promoCodes.id, id));
+    return true;
+  }
+
+  async incrementPromoUsage(id: number): Promise<void> {
+    await db.update(promoCodes)
+      .set({ usedCount: sql`${promoCodes.usedCount} + 1` })
+      .where(eq(promoCodes.id, id));
   }
 }
 
