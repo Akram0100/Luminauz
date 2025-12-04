@@ -26,6 +26,50 @@ export default function Checkout() {
     customerAddress: "",
   });
 
+  // Promo kod
+  const [promoCode, setPromoCode] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [promoError, setPromoError] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [isCheckingPromo, setIsCheckingPromo] = useState(false);
+
+  const DELIVERY_COST = 35000;
+  const finalTotal = totalPrice - promoDiscount + DELIVERY_COST;
+
+  const validatePromoCode = async () => {
+    if (!promoCode.trim()) return;
+
+    setIsCheckingPromo(true);
+    setPromoError("");
+
+    try {
+      const response = await fetch("/api/promo/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: promoCode, orderAmount: totalPrice }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.valid) {
+        setPromoDiscount(data.discount);
+        setPromoApplied(true);
+        toast({
+          title: "Promo kod qo'shildi!",
+          description: `Sizga ${formatPrice(data.discount)} chegirma berildi`,
+        });
+      } else {
+        setPromoError(data.error || "Promo kod noto'g'ri");
+        setPromoDiscount(0);
+        setPromoApplied(false);
+      }
+    } catch {
+      setPromoError("Promo kodni tekshirishda xatolik");
+    } finally {
+      setIsCheckingPromo(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -61,7 +105,7 @@ export default function Checkout() {
           customerName: formData.customerName,
           customerPhone: formData.customerPhone,
           customerAddress: formData.customerAddress,
-          totalAmount: totalPrice,
+          totalAmount: finalTotal,
           status: "yangi",
         },
         orderItems
@@ -253,6 +297,29 @@ export default function Checkout() {
                       </div>
                     )}
 
+                    {/* Promo Code Input */}
+                    <div className="space-y-2">
+                      <Label>Promo Kod</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Kod kiriting"
+                          value={promoCode}
+                          onChange={(e) => setPromoCode(e.target.value)}
+                          disabled={promoApplied}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={validatePromoCode}
+                          disabled={isCheckingPromo || promoApplied || !promoCode}
+                        >
+                          {isCheckingPromo ? <Loader2 className="w-4 h-4 animate-spin" /> : promoApplied ? <CheckCircle className="w-4 h-4 text-green-500" /> : "Qo'llash"}
+                        </Button>
+                      </div>
+                      {promoError && <p className="text-xs text-destructive">{promoError}</p>}
+                      {promoApplied && <p className="text-xs text-green-500">Promo kod qabul qilindi!</p>}
+                    </div>
+
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Mahsulotlar:</span>
@@ -262,14 +329,22 @@ export default function Checkout() {
                         <span className="text-muted-foreground">Mahsulotlar narxi:</span>
                         <span>{formatPrice(totalPrice)}</span>
                       </div>
+
+                      {promoApplied && (
+                        <div className="flex justify-between text-sm text-green-600 font-medium">
+                          <span>Chegirma:</span>
+                          <span>-{formatPrice(promoDiscount)}</span>
+                        </div>
+                      )}
+
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Yetkazib berish (Toshkent):</span>
-                        <span className="text-primary font-medium">{formatPrice(35000)}</span>
+                        <span className="text-primary font-medium">{formatPrice(DELIVERY_COST)}</span>
                       </div>
                       <Separator className="my-2" />
                       <div className="flex justify-between text-lg font-bold">
                         <span>Jami to'lov:</span>
-                        <span className="text-primary" data-testid="text-total-price">{formatPrice(totalPrice + 35000)}</span>
+                        <span className="text-primary" data-testid="text-total-price">{formatPrice(finalTotal)}</span>
                       </div>
                     </div>
 
