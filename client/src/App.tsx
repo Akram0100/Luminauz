@@ -15,6 +15,9 @@ import Login from "@/pages/login";
 import ProductPage from "@/pages/product";
 import FlashSalesPage from "@/pages/flash-sales";
 import Forbidden from "@/pages/forbidden";
+import Register from "@/pages/register";
+import CustomerLogin from "@/pages/customer-login";
+import Profile from "@/pages/profile";
 import { Link } from "wouter";
 
 function ProtectedAdminRoute({ component: Component }: { component: React.ComponentType }) {
@@ -45,6 +48,9 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
+      <Route path="/customer-login" component={CustomerLogin} />
+      <Route path="/profile" component={Profile} />
       <Route path="/product/:id" component={ProductPage} />
       <Route path="/flash-sales" component={FlashSalesPage} />
       <Route path="/admin">
