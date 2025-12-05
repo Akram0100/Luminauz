@@ -46,13 +46,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <TelegramPopup />
       <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-background transition-colors duration-300">
         <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
-          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="container mx-auto px-4 h-20 flex items-center justify-between">
             <Link href="/">
               <div className="flex items-center gap-3 group cursor-pointer">
                 <img
                   src={assets.logo}
                   alt="Lumina uz"
-                  className="h-12 w-auto object-contain"
+                  className="h-14 w-auto object-contain"
                 />
               </div>
             </Link>
