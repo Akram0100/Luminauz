@@ -171,17 +171,19 @@ Qoidalar:
       contents: [
         `Mahsulot: ${product.title}
 Tavsif: ${product.description}
-Narx: $${product.price}
+Narx: ${product.price} so'm
 Kategoriya: ${product.category}
+
+MUHIM: Narxlarni FAQAT so'm da ko'rsating, $ belgisi ishlatmang!
 
 Telegram post uchun marketing matni yarating:
 1. headline: Qisqa, kuchli sarlavha (10 so'zgacha)
-2. salesText: 2 qatorli savdo matni + CTA
+2. salesText: 2 qatorli savdo matni + CTA (narxlarni so'm da yozing)
 3. cta: Harakatga chaqirish (masalan: "Hoziroq xarid qiling!")
 4. offers: 2 ta maxsus taklif (masalan: "Bepul yetkazish", "1+1 aksiya")
 5. hashtags: 3-5 ta tegishli hashtag
-6. variantA: To'liq post matni (variant A)
-7. variantB: To'liq post matni (variant B - boshqacha uslubda)`,
+6. variantA: To'liq post matni (variant A, narxlarni so'm da yozing)
+7. variantB: To'liq post matni (variant B - boshqacha uslubda, narxlarni so'm da yozing)`,
       ],
     });
 
@@ -227,12 +229,14 @@ export async function generateFlashSaleContent(
       contents: [
         `Flash Sale uchun marketing matn yarating (o'zbek tilida):
 Mahsulot: ${product.title}
-Asl narx: $${product.price}
-Chegirma narxi: $${product.flashSalePrice}
+Asl narx: ${product.price} so'm
+Chegirma narxi: ${product.flashSalePrice} so'm
 Chegirma: ${discount}%
 
+MUHIM: Narxlarni FAQAT so'm da ko'rsating, $ belgisi ishlatmang!
+
 1. headline: Shoshilinch sarlavha (masalan: "FAQAT 24 SOAT!")
-2. urgencyText: Urgency yaratuvchi matn
+2. urgencyText: Urgency yaratuvchi matn (narxlarni so'm da yozing)
 3. countdown: Sanashga chaqiruvchi matn`,
       ],
     });
