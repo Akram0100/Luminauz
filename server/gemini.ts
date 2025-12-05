@@ -28,9 +28,25 @@ export interface MarketingContent {
   variantB: string;
 }
 
+// Helper function to get image bytes from local file or URL
+async function getImageBytes(imagePath: string): Promise<Buffer> {
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    // Fetch from URL (Cloudinary etc.)
+    const response = await fetch(imagePath);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.statusText}`);
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    return Buffer.from(arrayBuffer);
+  } else {
+    // Read from local file
+    return fs.readFileSync(imagePath);
+  }
+}
+
 export async function analyzeProductImage(imagePath: string): Promise<ProductAnalysis> {
   try {
-    const imageBytes = fs.readFileSync(imagePath);
+    const imageBytes = await getImageBytes(imagePath);
 
     const systemPrompt = `Siz professional mahsulot tahlilchisi va marketing mutaxassisisiz.
 Rasmni tahlil qilib, quyidagi ma'lumotlarni JSON formatida qaytaring:
@@ -75,8 +91,8 @@ Sales psychology qoidalari:
             seoDescription: { type: "string" },
           },
           required: [
-            "title", "category", "price", "description", "sentiment", 
-            "keywords", "prediction", "sellingPoints", "useCases", 
+            "title", "category", "price", "description", "sentiment",
+            "keywords", "prediction", "sellingPoints", "useCases",
             "priceJustification", "seoTitle", "seoDescription"
           ],
         },
@@ -193,7 +209,7 @@ export async function generateFlashSaleContent(
 ): Promise<{ headline: string; urgencyText: string; countdown: string }> {
   try {
     const discount = Math.round(((product.price - product.flashSalePrice) / product.price) * 100);
-    
+
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       config: {
