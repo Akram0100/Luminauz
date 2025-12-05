@@ -49,7 +49,11 @@ import {
   stopCron,
   runCronNow,
   setFlashSale,
-  clearFlashSale
+  clearFlashSale,
+  getInstagramCronStatus,
+  startInstagramCron,
+  stopInstagramCron,
+  runInstagramCronNow
 } from "@/lib/api";
 import type { Product, Order } from "@shared/schema";
 import { formatPrice } from "@/lib/utils";
@@ -171,6 +175,31 @@ export default function Admin() {
       queryClient.invalidateQueries({ queryKey: ["telegram-logs"] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
       toast({ title: "Ishga tushdi", description: "Qo'lda post yuborildi." });
+    },
+  });
+
+  // Instagram cron mutations
+  const startInstagramCronMutation = useMutation({
+    mutationFn: startInstagramCron,
+    onSuccess: () => {
+      toast({ title: "Instagram boshlandi", description: "Har soatda Instagram'ga post yuboriladi." });
+    },
+  });
+
+  const stopInstagramCronMutation = useMutation({
+    mutationFn: stopInstagramCron,
+    onSuccess: () => {
+      toast({ title: "Instagram to'xtatildi", description: "Instagram avtomatik post to'xtatildi." });
+    },
+  });
+
+  const runInstagramNowMutation = useMutation({
+    mutationFn: runInstagramCronNow,
+    onSuccess: () => {
+      toast({ title: "Instagram'ga yuborildi", description: "Mahsulot Instagram'ga joylandi!" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     },
   });
 
@@ -343,10 +372,11 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex gap-2">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex gap-2">
             <TabsTrigger value="products" data-testid="tab-products">Mahsulotlar</TabsTrigger>
             <TabsTrigger value="orders" data-testid="tab-orders">Buyurtmalar</TabsTrigger>
             <TabsTrigger value="telegram" data-testid="tab-telegram">Telegram</TabsTrigger>
+            <TabsTrigger value="instagram" data-testid="tab-instagram">Instagram</TabsTrigger>
             <TabsTrigger value="flash-sale" data-testid="tab-flash-sale">Flash Sale</TabsTrigger>
           </TabsList>
 
