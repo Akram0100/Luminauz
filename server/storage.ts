@@ -172,6 +172,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteProduct(id: number): Promise<boolean> {
+    // Avval bog'liq yozuvlarni o'chirish (foreign key constraint uchun)
+    await db.delete(telegramLogs).where(eq(telegramLogs.productId, id));
+    await db.delete(orderItems).where(eq(orderItems.productId, id));
+
+    // Endi mahsulotni o'chirish
     const result = await db.delete(products).where(eq(products.id, id));
     return result.rowCount ? result.rowCount > 0 : false;
   }
