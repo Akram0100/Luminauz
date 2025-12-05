@@ -51,12 +51,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <div className="flex items-center gap-3 group cursor-pointer">
                 <img
                   src={assets.logo}
-                  alt="Lumina"
-                  className="h-10 w-10 rounded-lg object-cover border border-primary/20 group-hover:border-primary/50 transition-all shadow-[0_0_15px_-5px_var(--color-primary)]"
+                  alt="Lumina uz"
+                  className="h-12 w-auto object-contain"
                 />
-                <span className="font-display font-bold text-xl tracking-wide">
-                  Lumina<span className="text-primary">.</span>
-                </span>
               </div>
             </Link>
 

@@ -1,10 +1,9 @@
-import logoImage from '@assets/generated_images/lumina_ai_logo.png';
 import watchImage from '@assets/generated_images/smart_watch_product.png';
 import droneImage from '@assets/generated_images/ai_drone_product.png';
 import headsetImage from '@assets/generated_images/neural_headset_product.png';
 
 export const assets = {
-  logo: logoImage,
+  logo: '/logo.png',
 };
 
 export interface Product {
