@@ -82,31 +82,19 @@ function formatInstagramCaption(
     const baseUrl = "luminauz.onrender.com";
     const priceFormatted = product.price.toLocaleString('uz-UZ');
 
-    const flashSaleText = product.isFlashSale && product.flashSalePrice
-        ? `\n💥 ${priceFormatted} so'm ➡️ ${product.flashSalePrice.toLocaleString('uz-UZ')} so'm CHEGIRMA!`
-        : `💰 ${priceFormatted} so'm`;
-
-    const stockText = product.stock && product.stock > 0
-        ? `\n📦 Omborda: ${product.stock} dona`
-        : "";
-
     return `${marketing.headline}
 
 ${product.description}
 
-${marketing.salesText}
-
-${flashSaleText}${stockText}
-
-${marketing.offers.map(o => `✅ ${o}`).join("\n")}
-
-${marketing.cta}
+💰 Narxi: ${priceFormatted} so'm
+📦 Ulgurji narxlarda!
 
 🛒 Buyurtma: ${baseUrl}
 📞 Aloqa: +998 99 644 84 44
 
-${marketing.hashtags.join(" ")} #luminauz #onlineshopping #uzbekistan`;
+${marketing.hashtags.slice(0, 5).join(" ")} #luminauz #ulgurji #arzonnarx`;
 }
+
 
 // Mahsulotni Instagramga post qilish
 export async function postProductToInstagram(product: Product): Promise<boolean> {
