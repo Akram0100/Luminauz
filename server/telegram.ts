@@ -105,38 +105,23 @@ function formatTelegramCaption(
   const productUrl = `${baseUrl}/product/${product.id}`;
 
   const priceFormatted = product.price.toLocaleString('uz-UZ');
-  const flashSaleText = product.isFlashSale && product.flashSalePrice
-    ? `\n💥 <s>${priceFormatted} so'm</s> <b>${product.flashSalePrice.toLocaleString('uz-UZ')} so'm</b> CHEGIRMA!`
-    : `💰 <b>${priceFormatted} so'm</b>`;
-
   const brandText = product.brand ? `\n🏷 Brend: ${product.brand}` : "";
-  const shortDesc = product.shortDescription ? `\n\n${product.shortDescription}` : "";
-  const stockText = product.stock !== null && product.stock !== undefined && product.stock > 0
-    ? `\n📦 Omborda: ${product.stock} dona`
-    : product.stock === 0
-      ? "\n⚠️ Tugagan"
-      : "";
-
-  const videoText = product.videoUrl ? `\n\n🎬 <a href="${product.videoUrl}">Videoni Ko'rish</a>` : "";
 
   return `${marketing.headline}
 ${brandText}
-${shortDesc}
 
-${marketing.salesText}
+${product.description}
 
-${flashSaleText}${stockText}
+💰 <b>${priceFormatted} so'm</b>
+📦 Ulgurji narxlarda!
 
-${marketing.offers.map(o => `✅ ${o}`).join("\n")}
-
-${marketing.cta}${videoText}
-
-${marketing.hashtags.join(" ")}
+${marketing.hashtags.slice(0, 5).join(" ")}
 
 🛒 <a href="${productUrl}">Sotib Olish</a>
 📞 Aloqa: +998 99 644 84 44
 🌐 <a href="${baseUrl}">luminauz.onrender.com</a>`;
 }
+
 
 function getFullImageUrl(imageUrl: string): string {
   // Agar Cloudinary URL bo'lsa, to'g'ridan-to'g'ri qaytarish
