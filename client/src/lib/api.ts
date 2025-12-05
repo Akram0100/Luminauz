@@ -124,6 +124,44 @@ export async function runCronNow(): Promise<{ success: boolean }> {
   return res.json();
 }
 
+// Instagram API
+export async function getInstagramStatus(): Promise<{ connected: boolean; username?: string; cronRunning: boolean; error?: string }> {
+  const res = await fetch(`${API_BASE}/instagram/status`, { credentials: "include" });
+  return res.json();
+}
+
+export async function postToInstagram(productId: number): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_BASE}/instagram/post/${productId}`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || "Instagram'ga yuborib bo'lmadi");
+  }
+  return res.json();
+}
+
+export async function getInstagramCronStatus(): Promise<{ running: boolean }> {
+  const res = await fetch(`${API_BASE}/instagram/cron/status`);
+  return res.json();
+}
+
+export async function startInstagramCron(): Promise<{ success: boolean; running: boolean }> {
+  const res = await fetch(`${API_BASE}/instagram/cron/start`, { method: "POST", credentials: "include" });
+  return res.json();
+}
+
+export async function stopInstagramCron(): Promise<{ success: boolean; running: boolean }> {
+  const res = await fetch(`${API_BASE}/instagram/cron/stop`, { method: "POST", credentials: "include" });
+  return res.json();
+}
+
+export async function runInstagramCronNow(): Promise<{ success: boolean }> {
+  const res = await fetch(`${API_BASE}/instagram/cron/run-now`, { method: "POST", credentials: "include" });
+  return res.json();
+}
+
 export async function generateMarketing(productId: number): Promise<any> {
   const res = await fetch(`${API_BASE}/products/${productId}/marketing`, {
     method: "POST",

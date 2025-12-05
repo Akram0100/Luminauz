@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { insertProductSchema, insertOrderSchema, insertOrderItemSchema, insertUserSchema, type ProductSearchFilters } from "@shared/schema";
 import { analyzeProductImage, generateMarketingContent, generateFlashSaleContent } from "./gemini";
 import { postProductToTelegram, runHourlyCronJob, startCronJob, stopCronJob, isCronRunning } from "./telegram";
+import { postProductToInstagram, runInstagramCronJob, startInstagramCron, stopInstagramCron, isInstagramCronRunning, checkInstagramConnection } from "./instagram";
 import { uploadImage, isCloudinaryConfigured } from "./cloudinary";
 import multer from "multer";
 import path from "path";
@@ -557,6 +558,75 @@ export async function registerRoutes(
     try {
       await runHourlyCronJob();
       res.json({ success: true, message: "Cron job qo'lda ishga tushirildi" });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ==================== INSTAGRAM API ====================
+
+  // Instagram ulanish holatini tekshirish
+  app.get("/api/instagram/status", requireAdmin, async (req, res) => {
+    try {
+      const status = await checkInstagramConnection();
+      res.json({ ...status, cronRunning: isInstagramCronRunning() });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Mahsulotni Instagramga post qilish
+  app.post("/api/instagram/post/:productId", requireAdmin, async (req, res) => {
+    try {
+      const productId = parseInt(req.params.productId);
+      const product = await storage.getProduct(productId);
+
+      if (!product) {
+        return res.status(404).json({ error: "Mahsulot topilmadi" });
+      }
+
+      const success = await postProductToInstagram(product);
+
+      if (success) {
+        res.json({ success: true, message: "Instagram'ga muvaffaqiyatli joylandi!" });
+      } else {
+        res.status(500).json({ error: "Instagram'ga joylab bo'lmadi" });
+      }
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Instagram cron'ni boshlash
+  app.post("/api/instagram/cron/start", requireAdmin, async (req, res) => {
+    try {
+      startInstagramCron();
+      res.json({ success: true, message: "Instagram cron job boshlandi", running: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Instagram cron'ni to'xtatish
+  app.post("/api/instagram/cron/stop", requireAdmin, async (req, res) => {
+    try {
+      stopInstagramCron();
+      res.json({ success: true, message: "Instagram cron job to'xtatildi", running: false });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Instagram cron holatini tekshirish
+  app.get("/api/instagram/cron/status", async (req, res) => {
+    res.json({ running: isInstagramCronRunning() });
+  });
+
+  // Instagram cron'ni hoziroq ishga tushirish
+  app.post("/api/instagram/cron/run-now", requireAdmin, async (req, res) => {
+    try {
+      await runInstagramCronJob();
+      res.json({ success: true, message: "Instagram cron job qo'lda ishga tushirildi" });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
