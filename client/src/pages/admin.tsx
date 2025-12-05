@@ -101,6 +101,12 @@ export default function Admin() {
     refetchInterval: 5000,
   });
 
+  const { data: instagramCronStatus } = useQuery({
+    queryKey: ["instagram-cron-status"],
+    queryFn: getInstagramCronStatus,
+    refetchInterval: 5000,
+  });
+
   const createProductMutation = useMutation({
     mutationFn: createProduct,
     onSuccess: () => {
@@ -781,6 +787,50 @@ export default function Admin() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="instagram">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Image className="w-5 h-5" /> Instagram Avtomatik Post
+                </CardTitle>
+                <CardDescription>Har soatda Instagram'ga avtomatik mahsulot joylashtirish</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-lg bg-secondary/50">
+                  <div>
+                    <p className="font-medium">Instagram Avtomatik Post</p>
+                    <p className="text-sm text-muted-foreground">Har 1 soatda bitta mahsulot</p>
+                  </div>
+                  <Badge variant={instagramCronStatus?.running ? "default" : "secondary"} className="text-lg px-4 py-1">
+                    {instagramCronStatus?.running ? "Ishlayapti" : "To'xtagan"}
+                  </Badge>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {instagramCronStatus?.running ? (
+                    <Button variant="destructive" onClick={() => stopInstagramCronMutation.mutate()} disabled={stopInstagramCronMutation.isPending} className="flex-1">
+                      <Pause className="w-4 h-4 mr-2" /> To'xtatish
+                    </Button>
+                  ) : (
+                    <Button onClick={() => startInstagramCronMutation.mutate()} disabled={startInstagramCronMutation.isPending} className="flex-1">
+                      <Play className="w-4 h-4 mr-2" /> Boshlash
+                    </Button>
+                  )}
+                  <Button variant="outline" onClick={() => runInstagramNowMutation.mutate()} disabled={runInstagramNowMutation.isPending}>
+                    <Zap className="w-4 h-4 mr-2" /> Hozir Instagram'ga Joylashtirish
+                  </Button>
+                </div>
+
+                <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                  <p className="text-sm text-amber-600 dark:text-amber-400">
+                    <strong>Eslatma:</strong> Instagram API ishlashi uchun hisobingizda 2FA o'chirilgan bo'lishi kerak.
+                    Yangi qurilmadan kirganda Instagram tasdiqlashni so'rashi mumkin.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="flash-sale">
