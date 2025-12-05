@@ -25,6 +25,7 @@ export async function createProduct(formData: FormData): Promise<Product> {
   const res = await fetch(`${API_BASE}/products`, {
     method: "POST",
     body: formData,
+    credentials: "include",
   });
   if (!res.ok) {
     const error = await res.json();
@@ -36,6 +37,7 @@ export async function createProduct(formData: FormData): Promise<Product> {
 export async function deleteProduct(id: number): Promise<void> {
   const res = await fetch(`${API_BASE}/products/${id}`, {
     method: "DELETE",
+    credentials: "include",
   });
   if (!res.ok) throw new Error("Mahsulotni o'chirib bo'lmadi");
 }
@@ -44,6 +46,7 @@ export async function updateProduct(id: number, formData: FormData): Promise<Pro
   const res = await fetch(`${API_BASE}/products/${id}`, {
     method: "PATCH",
     body: formData,
+    credentials: "include",
   });
   if (!res.ok) {
     const error = await res.json();
@@ -64,6 +67,7 @@ export async function setFlashSale(productId: number, flashSalePrice: number, ho
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ flashSalePrice, hours }),
+    credentials: "include",
   });
   if (!res.ok) {
     const error = await res.json();
@@ -75,6 +79,7 @@ export async function setFlashSale(productId: number, flashSalePrice: number, ho
 export async function clearFlashSale(productId: number): Promise<Product> {
   const res = await fetch(`${API_BASE}/products/${productId}/flash-sale`, {
     method: "DELETE",
+    credentials: "include",
   });
   if (!res.ok) throw new Error("Flash sale o'chirib bo'lmadi");
   return res.json();
@@ -82,7 +87,7 @@ export async function clearFlashSale(productId: number): Promise<Product> {
 
 // Telegram API
 export async function getTelegramLogs(): Promise<TelegramLog[]> {
-  const res = await fetch(`${API_BASE}/telegram/logs`);
+  const res = await fetch(`${API_BASE}/telegram/logs`, { credentials: "include" });
   if (!res.ok) throw new Error("Telegram loglarni yuklab bo'lmadi");
   return res.json();
 }
@@ -90,6 +95,7 @@ export async function getTelegramLogs(): Promise<TelegramLog[]> {
 export async function postToTelegram(productId: number): Promise<{ success: boolean; message: string }> {
   const res = await fetch(`${API_BASE}/telegram/post/${productId}`, {
     method: "POST",
+    credentials: "include",
   });
   if (!res.ok) {
     const error = await res.json();
@@ -104,23 +110,24 @@ export async function getCronStatus(): Promise<{ running: boolean }> {
 }
 
 export async function startCron(): Promise<{ success: boolean; running: boolean }> {
-  const res = await fetch(`${API_BASE}/telegram/cron/start`, { method: "POST" });
+  const res = await fetch(`${API_BASE}/telegram/cron/start`, { method: "POST", credentials: "include" });
   return res.json();
 }
 
 export async function stopCron(): Promise<{ success: boolean; running: boolean }> {
-  const res = await fetch(`${API_BASE}/telegram/cron/stop`, { method: "POST" });
+  const res = await fetch(`${API_BASE}/telegram/cron/stop`, { method: "POST", credentials: "include" });
   return res.json();
 }
 
 export async function runCronNow(): Promise<{ success: boolean }> {
-  const res = await fetch(`${API_BASE}/telegram/cron/run-now`, { method: "POST" });
+  const res = await fetch(`${API_BASE}/telegram/cron/run-now`, { method: "POST", credentials: "include" });
   return res.json();
 }
 
 export async function generateMarketing(productId: number): Promise<any> {
   const res = await fetch(`${API_BASE}/products/${productId}/marketing`, {
     method: "POST",
+    credentials: "include",
   });
   if (!res.ok) throw new Error("Marketing yaratib bo'lmadi");
   return res.json();
@@ -128,7 +135,7 @@ export async function generateMarketing(productId: number): Promise<any> {
 
 // Orders API
 export async function getOrders(): Promise<Order[]> {
-  const res = await fetch(`${API_BASE}/orders`);
+  const res = await fetch(`${API_BASE}/orders`, { credentials: "include" });
   if (!res.ok) throw new Error("Buyurtmalarni yuklab bo'lmadi");
   return res.json();
 }
@@ -151,6 +158,7 @@ export async function updateOrderStatus(id: number, status: string): Promise<Ord
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status }),
+    credentials: "include",
   });
   if (!res.ok) throw new Error("Buyurtma holatini o'zgartirib bo'lmadi");
   return res.json();
