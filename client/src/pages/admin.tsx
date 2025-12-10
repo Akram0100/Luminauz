@@ -31,7 +31,8 @@ import {
   Video,
   Tag,
   Boxes,
-  Edit
+  Edit,
+  FolderPlus
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -53,9 +54,12 @@ import {
   getInstagramCronStatus,
   startInstagramCron,
   stopInstagramCron,
-  runInstagramCronNow
+  runInstagramCronNow,
+  getCategories,
+  createCategory,
+  deleteCategory
 } from "@/lib/api";
-import type { Product, Order } from "@shared/schema";
+import type { Product, Order, Category } from "@shared/schema";
 import { formatPrice } from "@/lib/utils";
 
 interface ProductSpec {
@@ -105,6 +109,39 @@ export default function Admin() {
     queryKey: ["instagram-cron-status"],
     queryFn: getInstagramCronStatus,
     refetchInterval: 5000,
+  });
+
+  // Category state and hooks
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategorySlug, setNewCategorySlug] = useState("");
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+  });
+
+  const createCategoryMutation = useMutation({
+    mutationFn: createCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      toast({ title: "Kategoriya yaratildi", description: "Yangi kategoriya qo'shildi." });
+      setNewCategoryName("");
+      setNewCategorySlug("");
+    },
+    onError: (error: Error) => {
+      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: deleteCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      toast({ title: "O'chirildi", description: "Kategoriya muvaffaqiyatli o'chirildi." });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
+    },
   });
 
   const createProductMutation = useMutation({
@@ -378,9 +415,10 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex gap-2">
+          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-flex gap-2">
             <TabsTrigger value="products" data-testid="tab-products">Mahsulotlar</TabsTrigger>
             <TabsTrigger value="orders" data-testid="tab-orders">Buyurtmalar</TabsTrigger>
+            <TabsTrigger value="categories" data-testid="tab-categories">Kategoriyalar</TabsTrigger>
             <TabsTrigger value="telegram" data-testid="tab-telegram">Telegram</TabsTrigger>
             <TabsTrigger value="instagram" data-testid="tab-instagram">Instagram</TabsTrigger>
             <TabsTrigger value="flash-sale" data-testid="tab-flash-sale">Flash Sale</TabsTrigger>
@@ -720,6 +758,100 @@ export default function Admin() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="categories">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FolderPlus className="w-5 h-5" /> Kategoriyalar ({categories.length})
+                  </CardTitle>
+                  <CardDescription>Mahsulot kategoriyalarini boshqaring</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-[400px]">
+                    <div className="space-y-3 pr-4">
+                      {categories.length === 0 ? (
+                        <p className="text-center text-muted-foreground py-8">Hozircha kategoriyalar yo'q</p>
+                      ) : (
+                        categories.map((category: Category) => (
+                          <div key={category.id} className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 border border-border" data-testid={`category-item-${category.id}`}>
+                            <div className="flex items-center gap-3">
+                              {category.imageUrl && (
+                                <img src={category.imageUrl} className="w-10 h-10 rounded object-cover" alt={category.name} />
+                              )}
+                              <div>
+                                <div className="font-medium">{category.name}</div>
+                                <div className="text-xs text-muted-foreground">/{category.slug}</div>
+                              </div>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => deleteCategoryMutation.mutate(category.id)}
+                              disabled={deleteCategoryMutation.isPending}
+                              data-testid={`button-delete-category-${category.id}`}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Yangi Kategoriya</CardTitle>
+                  <CardDescription>Yangi kategoriya qo'shing</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="category-name">Kategoriya Nomi</Label>
+                    <Input
+                      id="category-name"
+                      placeholder="Elektronika"
+                      value={newCategoryName}
+                      onChange={(e) => {
+                        setNewCategoryName(e.target.value);
+                        // Auto-generate slug
+                        setNewCategorySlug(e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''));
+                      }}
+                      data-testid="input-category-name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="category-slug">Slug (URL)</Label>
+                    <Input
+                      id="category-slug"
+                      placeholder="elektronika"
+                      value={newCategorySlug}
+                      onChange={(e) => setNewCategorySlug(e.target.value)}
+                      data-testid="input-category-slug"
+                    />
+                  </div>
+                  <Button
+                    className="w-full"
+                    onClick={() => {
+                      if (newCategoryName && newCategorySlug) {
+                        createCategoryMutation.mutate({ name: newCategoryName, slug: newCategorySlug });
+                      }
+                    }}
+                    disabled={!newCategoryName || !newCategorySlug || createCategoryMutation.isPending}
+                    data-testid="button-create-category"
+                  >
+                    {createCategoryMutation.isPending ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Qo'shilmoqda...</>
+                    ) : (
+                      <><Plus className="w-4 h-4 mr-2" /> Kategoriya Qo'shish</>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="telegram">

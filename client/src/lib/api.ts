@@ -1,4 +1,4 @@
-import type { Product, InsertProduct, Order, InsertOrder, TelegramLog } from "@shared/schema";
+import type { Product, InsertProduct, Order, InsertOrder, TelegramLog, Category } from "@shared/schema";
 
 const API_BASE = "/api";
 
@@ -285,10 +285,46 @@ export async function advancedSearch(params: {
   return res.json();
 }
 
-export async function getCategories(): Promise<string[]> {
+export async function getCategories(): Promise<Category[]> {
   const res = await fetch(`${API_BASE}/categories`);
   if (!res.ok) throw new Error("Kategoriyalarni yuklab bo'lmadi");
   return res.json();
+}
+
+export async function createCategory(data: { name: string; slug: string; imageUrl?: string }): Promise<Category> {
+  const res = await fetch(`${API_BASE}/categories`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || "Kategoriya qo'shib bo'lmadi");
+  }
+  return res.json();
+}
+
+export async function updateCategory(id: number, data: Partial<{ name: string; slug: string; imageUrl?: string }>): Promise<Category> {
+  const res = await fetch(`${API_BASE}/categories/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || "Kategoriya yangilab bo'lmadi");
+  }
+  return res.json();
+}
+
+export async function deleteCategory(id: number): Promise<void> {
+  const res = await fetch(`${API_BASE}/categories/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Kategoriya o'chirib bo'lmadi");
 }
 
 export async function getBrands(): Promise<string[]> {
@@ -296,3 +332,4 @@ export async function getBrands(): Promise<string[]> {
   if (!res.ok) throw new Error("Brendlarni yuklab bo'lmadi");
   return res.json();
 }
+
