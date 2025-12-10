@@ -29,6 +29,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import type { Product } from "@shared/schema";
 import { formatPrice } from "@/lib/utils";
+import { SEO } from "@/components/seo";
 
 function CountdownTimer({ endsAt }: { endsAt: Date }) {
   const [timeLeft, setTimeLeft] = useState("");
@@ -337,6 +338,23 @@ export default function ProductPage() {
 
   return (
     <Layout>
+      <SEO
+        title={product.title}
+        description={product.shortDescription || product.description}
+        image={product.imageUrl}
+        url={`/product/${product.slug || product.id}`}
+        type="product"
+        product={{
+          name: product.title,
+          description: product.description,
+          price: displayPrice,
+          image: product.imageUrl,
+          availability: (product.stock ?? 0) > 0 ? "InStock" : "OutOfStock",
+          brand: product.brand || undefined,
+          category: product.category,
+          sku: product.id.toString(),
+        }}
+      />
       <div className="container mx-auto px-4 py-8 pb-24 lg:pb-8">
         <Button variant="ghost" asChild className="mb-6">
           <Link href="/" data-testid="link-back">

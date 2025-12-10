@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { useLocation, Link } from "wouter";
 import type { Product } from "@shared/schema";
 import { formatPrice } from "@/lib/utils";
+import { SEO } from "@/components/seo";
 
 function CountdownTimer({ endsAt }: { endsAt: Date }) {
   const [timeLeft, setTimeLeft] = useState("");
@@ -95,6 +96,11 @@ export default function Home() {
 
   return (
     <Layout>
+      <SEO
+        title="Bosh Sahifa"
+        description="Lumina - O'zbekistondagi eng yaxshi online do'kon. Premium sifatli mahsulotlar, arzon narxlar va tezkor yetkazib berish."
+        url="/"
+      />
       {/* Hero Section */}
       <section className="relative overflow-hidden py-16 lg:py-24">
         {/* Background Effects */}

@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
 import { CartProvider } from "@/hooks/use-cart";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { HelmetProvider } from "react-helmet-async";
 import { Loader2 } from "lucide-react";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
@@ -63,19 +64,22 @@ function Router() {
 
 function App() {
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <CartProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Router />
-            </TooltipProvider>
-          </CartProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <HelmetProvider>
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <CartProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Router />
+              </TooltipProvider>
+            </CartProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
+    </HelmetProvider>
   );
 }
 
 export default App;
+

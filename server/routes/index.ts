@@ -9,6 +9,7 @@ import { orderRouter } from "./orders";
 import { telegramRouter } from "./telegram";
 import { instagramRouter } from "./instagram";
 import { categoryRouter } from "./categories";
+import { seoRouter } from "./seo";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -21,6 +22,9 @@ export async function registerRoutes(
     next();
   }, express.static(path.join(process.cwd(), "uploads")));
 
+  // SEO routes (sitemap.xml, robots.txt)
+  app.use(seoRouter);
+
   // API Routers
   app.use("/api/auth", authRouter);
   app.use("/api", productRouter); // /api/products, /api/brands etc.
@@ -32,4 +36,5 @@ export async function registerRoutes(
 
   return httpServer;
 }
+
 
