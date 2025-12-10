@@ -22,6 +22,7 @@ import {
 import { motion } from "framer-motion";
 import type { Product } from "@shared/schema";
 import { formatPrice } from "@/lib/utils";
+import { SEO } from "@/components/seo";
 
 function AnimatedCountdown({ endsAt }: { endsAt: Date }) {
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
@@ -218,6 +219,11 @@ export default function FlashSalesPage() {
 
   return (
     <Layout>
+      <SEO
+        title="Flash Sale - Tezkor Chegirmalar"
+        description="Cheklangan vaqt ichida eng yaxshi mahsulotlarni 70% gacha chegirma bilan sotib oling! Fursatni qo'ldan boy bermang."
+        url="/flash-sales"
+      />
       <div className="min-h-screen bg-gradient-to-b from-background via-red-500/5 to-background">
         <section className="relative py-16 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent" />
