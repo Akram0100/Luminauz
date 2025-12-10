@@ -6,7 +6,8 @@ import type {
     OrderItem, InsertOrderItem,
     TelegramLog, InsertTelegramLog,
     PromoCode, InsertPromoCode,
-    Customer, InsertCustomer
+    Customer, InsertCustomer,
+    Category, InsertCategory
 } from "@shared/schema";
 
 export interface IStorage {
@@ -66,4 +67,12 @@ export interface IStorage {
     getCustomerByEmail(email: string): Promise<Customer | undefined>;
     createCustomer(customer: InsertCustomer): Promise<Customer>;
     getCustomerOrders(customerId: number): Promise<Order[]>;
+
+    // Category methods
+    getAllCategories(): Promise<Category[]>;
+    getCategory(id: number): Promise<Category | undefined>;
+    getCategoryBySlug(slug: string): Promise<Category | undefined>;
+    createCategory(category: InsertCategory): Promise<Category>;
+    updateCategory(id: number, data: Partial<InsertCategory>): Promise<Category | undefined>;
+    deleteCategory(id: number): Promise<boolean>;
 }

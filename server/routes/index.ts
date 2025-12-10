@@ -8,6 +8,7 @@ import { productRouter } from "./products";
 import { orderRouter } from "./orders";
 import { telegramRouter } from "./telegram";
 import { instagramRouter } from "./instagram";
+import { categoryRouter } from "./categories";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -24,9 +25,11 @@ export async function registerRoutes(
   app.use("/api/auth", authRouter);
   app.use("/api", productRouter); // /api/products, /api/brands etc.
   app.use("/api", orderRouter);   // /api/orders, /api/promo etc.
+  app.use("/api", categoryRouter); // /api/categories
 
   app.use("/api/telegram", telegramRouter);
   app.use("/api/instagram", instagramRouter);
 
   return httpServer;
 }
+

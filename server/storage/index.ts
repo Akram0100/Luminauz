@@ -4,6 +4,7 @@ import { ProductStorage } from "./products";
 import { OrderStorage } from "./orders";
 import { CustomerStorage } from "./customers";
 import { SystemStorage } from "./system";
+import { CategoryStorage } from "./categories";
 import type {
     User, InsertUser,
     Session, InsertSession,
@@ -12,7 +13,8 @@ import type {
     OrderItem, InsertOrderItem,
     TelegramLog, InsertTelegramLog,
     PromoCode, InsertPromoCode,
-    Customer, InsertCustomer
+    Customer, InsertCustomer,
+    Category, InsertCategory
 } from "@shared/schema";
 
 export class DatabaseStorage implements IStorage {
@@ -21,6 +23,7 @@ export class DatabaseStorage implements IStorage {
     private orders = new OrderStorage();
     private customers = new CustomerStorage();
     private system = new SystemStorage();
+    private categoriesStorage = new CategoryStorage();
 
     // User methods
     getUser(id: string): Promise<User | undefined> { return this.users.getUser(id); }
@@ -78,7 +81,16 @@ export class DatabaseStorage implements IStorage {
     getCustomerByEmail(email: string): Promise<Customer | undefined> { return this.customers.getCustomerByEmail(email); }
     createCustomer(customer: InsertCustomer): Promise<Customer> { return this.customers.createCustomer(customer); }
     getCustomerOrders(customerId: number): Promise<Order[]> { return this.customers.getCustomerOrders(customerId); }
+
+    // Category methods
+    getAllCategories(): Promise<Category[]> { return this.categoriesStorage.getAllCategories(); }
+    getCategory(id: number): Promise<Category | undefined> { return this.categoriesStorage.getCategory(id); }
+    getCategoryBySlug(slug: string): Promise<Category | undefined> { return this.categoriesStorage.getCategoryBySlug(slug); }
+    createCategory(category: InsertCategory): Promise<Category> { return this.categoriesStorage.createCategory(category); }
+    updateCategory(id: number, data: Partial<InsertCategory>): Promise<Category | undefined> { return this.categoriesStorage.updateCategory(id, data); }
+    deleteCategory(id: number): Promise<boolean> { return this.categoriesStorage.deleteCategory(id); }
 }
 
 export const storage = new DatabaseStorage();
 export * from "./types";
+

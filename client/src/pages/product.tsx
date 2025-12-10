@@ -238,7 +238,7 @@ function RelatedProducts({ productId }: { productId: number }) {
         {products.map((product) => (
           <Link
             key={product.id}
-            href={`/product/${product.id}`}
+            href={`/product/${product.slug || product.id}`}
             className="group rounded-xl overflow-hidden bg-card border border-border hover:border-primary/50 transition-colors"
             data-testid={`link-related-${product.id}`}
           >
@@ -269,17 +269,17 @@ function RelatedProducts({ productId }: { productId: number }) {
 
 export default function ProductPage() {
   const params = useParams<{ id: string }>();
-  const productId = parseInt(params.id || "0");
+  const idOrSlug = params.id || "";
 
   const { data: product, isLoading, error } = useQuery({
-    queryKey: ["/api/products", productId],
-    queryFn: () => getProduct(productId),
-    enabled: productId > 0,
+    queryKey: ["/api/products", idOrSlug],
+    queryFn: () => getProduct(idOrSlug),
+    enabled: !!idOrSlug,
   });
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [productId]);
+  }, [idOrSlug]);
 
   const { addToCart, items } = useCart();
   const { toast } = useToast();
@@ -296,7 +296,7 @@ export default function ProductPage() {
     setTimeout(() => setIsAdded(false), 2000);
   };
 
-  const isInCart = items.some((item) => item.product.id === productId);
+  const isInCart = items.some((item) => product && item.product.id === product.id);
   const displayPrice = product?.isFlashSale && product?.flashSalePrice
     ? product.flashSalePrice
     : product?.price || 0;
@@ -530,7 +530,7 @@ export default function ProductPage() {
           </div>
         </div>
 
-        <RelatedProducts productId={productId} />
+        {product && <RelatedProducts productId={product.id} />}
       </div>
 
       {/* Mobile Sticky Bottom Bar */}

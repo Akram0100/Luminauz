@@ -105,7 +105,7 @@ function FlashSaleCard({ product, onAddToCart, isAdded }: {
           </div>
         </div>
 
-        <Link href={`/product/${product.id}`} data-testid={`link-flash-sale-${product.id}`}>
+        <Link href={`/product/${product.slug || product.id}`} data-testid={`link-flash-sale-${product.id}`}>
           <div className="aspect-square overflow-hidden relative pt-10">
             <img
               src={product.imageUrl}
@@ -127,7 +127,7 @@ function FlashSaleCard({ product, onAddToCart, isAdded }: {
         <CardContent className="p-5 space-y-4">
           <div>
             <Badge variant="secondary" className="text-xs mb-2">{product.category}</Badge>
-            <Link href={`/product/${product.id}`}>
+            <Link href={`/product/${product.slug || product.id}`}>
               <h3 className="font-bold text-lg group-hover:text-primary transition-colors line-clamp-2">
                 {product.title}
               </h3>
@@ -170,7 +170,7 @@ function FlashSaleCard({ product, onAddToCart, isAdded }: {
               )}
             </Button>
             <Button variant="outline" asChild>
-              <Link href={`/product/${product.id}`} data-testid={`link-details-${product.id}`}>
+              <Link href={`/product/${product.slug || product.id}`} data-testid={`link-details-${product.id}`}>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </Button>

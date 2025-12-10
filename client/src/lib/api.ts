@@ -9,8 +9,8 @@ export async function getProducts(): Promise<Product[]> {
   return res.json();
 }
 
-export async function getProduct(id: number): Promise<Product> {
-  const res = await fetch(`${API_BASE}/products/${id}`);
+export async function getProduct(idOrSlug: number | string): Promise<Product> {
+  const res = await fetch(`${API_BASE}/products/${idOrSlug}`);
   if (!res.ok) throw new Error("Mahsulot topilmadi");
   return res.json();
 }
