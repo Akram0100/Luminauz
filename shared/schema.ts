@@ -62,6 +62,7 @@ export const products = pgTable("products", {
   flashSaleEnds: timestamp("flash_sale_ends"),
   flashSaleMarketingText: text("flash_sale_marketing_text"),
   telegramPostedAt: timestamp("telegram_posted_at"),
+  instagramPostedAt: timestamp("instagram_posted_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

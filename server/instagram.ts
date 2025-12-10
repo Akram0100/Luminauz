@@ -130,8 +130,8 @@ export async function postProductToInstagram(product: Product): Promise<boolean>
 
         console.log(`[Instagram] Product ${product.id} posted successfully!`);
 
-        // Product'ni yangilash (instagramPostedAt field kerak bo'lsa)
-        // await storage.updateProduct(product.id, { instagramPostedAt: new Date() } as any);
+        // Product'ni yangilash
+        await storage.updateProduct(product.id, { instagramPostedAt: new Date() } as any);
 
         return true;
     } catch (error: any) {
@@ -145,7 +145,7 @@ export async function runInstagramCronJob(): Promise<void> {
     console.log("[Instagram CRON] Starting hourly Instagram post job...");
 
     try {
-        const product = await storage.getRandomUnpostedProduct();
+        const product = await storage.getRandomUnpostedInstagramProduct();
 
         if (!product) {
             const latestProduct = await storage.getLatestProduct();

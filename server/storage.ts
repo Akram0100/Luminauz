@@ -47,6 +47,8 @@ export interface IStorage {
   getProductBySlug(slug: string): Promise<Product | undefined>;
   getLatestProduct(): Promise<Product | undefined>;
   getRandomUnpostedProduct(): Promise<Product | undefined>;
+  getRandomUnpostedInstagramProduct(): Promise<Product | undefined>;
+  getRandomUnpostedInstagramProduct(): Promise<Product | undefined>;
   getFlashSaleProducts(): Promise<Product[]>;
   getRelatedProducts(productId: number, limit?: number): Promise<Product[]>;
   searchProducts(query: string): Promise<Product[]>;
@@ -236,6 +238,16 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(products)
       .where(isNull(products.telegramPostedAt))
+      .orderBy(sql`RANDOM()`)
+      .limit(1);
+    return product || undefined;
+  }
+
+  async getRandomUnpostedInstagramProduct(): Promise<Product | undefined> {
+    const [product] = await db
+      .select()
+      .from(products)
+      .where(isNull(products.instagramPostedAt))
       .orderBy(sql`RANDOM()`)
       .limit(1);
     return product || undefined;
