@@ -11,7 +11,10 @@ import { eq, desc, isNull, sql, and, or } from "drizzle-orm";
 
 export class ProductStorage {
     async getAllProducts(): Promise<Product[]> {
-        return await db.select().from(products).orderBy(desc(products.createdAt));
+        // Filter out products with stock = 0, show only in-stock products
+        return await db.select().from(products)
+            .where(or(sql`${products.stock} > 0`, isNull(products.stock)))
+            .orderBy(desc(products.createdAt));
     }
 
     async getProduct(id: number): Promise<Product | undefined> {
