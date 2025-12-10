@@ -10,6 +10,7 @@ import { telegramRouter } from "./telegram";
 import { instagramRouter } from "./instagram";
 import { categoryRouter } from "./categories";
 import { seoRouter } from "./seo";
+import { blogRouter } from "./blog";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -30,11 +31,13 @@ export async function registerRoutes(
   app.use("/api", productRouter); // /api/products, /api/brands etc.
   app.use("/api", orderRouter);   // /api/orders, /api/promo etc.
   app.use("/api", categoryRouter); // /api/categories
+  app.use("/api", blogRouter);     // /api/blog
 
   app.use("/api/telegram", telegramRouter);
   app.use("/api/instagram", instagramRouter);
 
   return httpServer;
 }
+
 
 

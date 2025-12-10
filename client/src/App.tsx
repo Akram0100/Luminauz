@@ -15,6 +15,8 @@ import Checkout from "@/pages/checkout";
 import Login from "@/pages/login";
 import ProductPage from "@/pages/product";
 import FlashSalesPage from "@/pages/flash-sales";
+import BlogPage from "@/pages/blog";
+import BlogPostPage from "@/pages/blog-post";
 import Forbidden from "@/pages/forbidden";
 import Register from "@/pages/register";
 import CustomerLogin from "@/pages/customer-login";
@@ -54,6 +56,8 @@ function Router() {
       <Route path="/profile" component={Profile} />
       <Route path="/product/:id" component={ProductPage} />
       <Route path="/flash-sales" component={FlashSalesPage} />
+      <Route path="/blog" component={BlogPage} />
+      <Route path="/blog/:slug" component={BlogPostPage} />
       <Route path="/admin">
         <ProtectedAdminRoute component={Admin} />
       </Route>

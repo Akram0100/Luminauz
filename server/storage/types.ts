@@ -7,7 +7,8 @@ import type {
     TelegramLog, InsertTelegramLog,
     PromoCode, InsertPromoCode,
     Customer, InsertCustomer,
-    Category, InsertCategory
+    Category, InsertCategory,
+    BlogPost, InsertBlogPost
 } from "@shared/schema";
 
 export interface IStorage {
@@ -75,4 +76,15 @@ export interface IStorage {
     createCategory(category: InsertCategory): Promise<Category>;
     updateCategory(id: number, data: Partial<InsertCategory>): Promise<Category | undefined>;
     deleteCategory(id: number): Promise<boolean>;
+
+    // Blog methods
+    getAllBlogPosts(publishedOnly?: boolean): Promise<BlogPost[]>;
+    getBlogPost(id: number): Promise<BlogPost | undefined>;
+    getBlogPostBySlug(slug: string): Promise<BlogPost | undefined>;
+    createBlogPost(post: InsertBlogPost): Promise<BlogPost>;
+    updateBlogPost(id: number, data: Partial<InsertBlogPost>): Promise<BlogPost | undefined>;
+    deleteBlogPost(id: number): Promise<boolean>;
+    incrementBlogViewCount(id: number): Promise<void>;
+    publishBlogPost(id: number): Promise<BlogPost | undefined>;
+    unpublishBlogPost(id: number): Promise<BlogPost | undefined>;
 }

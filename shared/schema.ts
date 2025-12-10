@@ -238,6 +238,35 @@ export const insertCategorySchema = createInsertSchema(categories).omit({
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type Category = typeof categories.$inferSelect;
 
+// Blog Posts Table
+export const blogPosts = pgTable("blog_posts", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  excerpt: text("excerpt").notNull(), // Short description for cards
+  content: text("content").notNull(), // Full HTML/Markdown content
+  imageUrl: text("image_url"),
+  category: text("category").notNull(),
+  tags: json("tags").$type<string[]>().default([]),
+  author: text("author").default("Lumina").notNull(),
+  isPublished: boolean("is_published").default(false).notNull(),
+  viewCount: integer("view_count").default(0).notNull(),
+  metaTitle: text("meta_title"), // SEO meta title
+  metaDescription: text("meta_description"), // SEO meta description
+  aiGenerated: boolean("ai_generated").default(false).notNull(),
+  publishedAt: timestamp("published_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({
+  id: true,
+  viewCount: true,
+  createdAt: true,
+});
+
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
+export type BlogPost = typeof blogPosts.$inferSelect;
+
 // Search filters type
 export interface ProductSearchFilters {
   query?: string;
@@ -247,3 +276,4 @@ export interface ProductSearchFilters {
   minPrice?: number;
   maxPrice?: number;
 }
+

@@ -5,6 +5,7 @@ import { OrderStorage } from "./orders";
 import { CustomerStorage } from "./customers";
 import { SystemStorage } from "./system";
 import { CategoryStorage } from "./categories";
+import { BlogStorage } from "./blog";
 import type {
     User, InsertUser,
     Session, InsertSession,
@@ -14,7 +15,8 @@ import type {
     TelegramLog, InsertTelegramLog,
     PromoCode, InsertPromoCode,
     Customer, InsertCustomer,
-    Category, InsertCategory
+    Category, InsertCategory,
+    BlogPost, InsertBlogPost
 } from "@shared/schema";
 
 export class DatabaseStorage implements IStorage {
@@ -24,6 +26,8 @@ export class DatabaseStorage implements IStorage {
     private customers = new CustomerStorage();
     private system = new SystemStorage();
     private categoriesStorage = new CategoryStorage();
+    private blogStorage = new BlogStorage();
+
 
     // User methods
     getUser(id: string): Promise<User | undefined> { return this.users.getUser(id); }
@@ -89,8 +93,20 @@ export class DatabaseStorage implements IStorage {
     createCategory(category: InsertCategory): Promise<Category> { return this.categoriesStorage.createCategory(category); }
     updateCategory(id: number, data: Partial<InsertCategory>): Promise<Category | undefined> { return this.categoriesStorage.updateCategory(id, data); }
     deleteCategory(id: number): Promise<boolean> { return this.categoriesStorage.deleteCategory(id); }
+
+    // Blog methods
+    getAllBlogPosts(publishedOnly = true): Promise<BlogPost[]> { return this.blogStorage.getAllPosts(publishedOnly); }
+    getBlogPost(id: number): Promise<BlogPost | undefined> { return this.blogStorage.getPost(id); }
+    getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> { return this.blogStorage.getPostBySlug(slug); }
+    createBlogPost(post: InsertBlogPost): Promise<BlogPost> { return this.blogStorage.createPost(post); }
+    updateBlogPost(id: number, data: Partial<InsertBlogPost>): Promise<BlogPost | undefined> { return this.blogStorage.updatePost(id, data); }
+    deleteBlogPost(id: number): Promise<boolean> { return this.blogStorage.deletePost(id); }
+    incrementBlogViewCount(id: number): Promise<void> { return this.blogStorage.incrementViewCount(id); }
+    publishBlogPost(id: number): Promise<BlogPost | undefined> { return this.blogStorage.publishPost(id); }
+    unpublishBlogPost(id: number): Promise<BlogPost | undefined> { return this.blogStorage.unpublishPost(id); }
 }
 
 export const storage = new DatabaseStorage();
 export * from "./types";
+
 

@@ -333,3 +333,75 @@ export async function getBrands(): Promise<string[]> {
   return res.json();
 }
 
+// Blog API
+import type { BlogPost, InsertBlogPost } from "@shared/schema";
+
+export async function getBlogPosts(): Promise<BlogPost[]> {
+  const res = await fetch(`${API_BASE}/blog`);
+  if (!res.ok) throw new Error("Blog postlarni yuklab bo'lmadi");
+  return res.json();
+}
+
+export async function getBlogPost(slug: string): Promise<BlogPost> {
+  const res = await fetch(`${API_BASE}/blog/${slug}`);
+  if (!res.ok) throw new Error("Blog post topilmadi");
+  return res.json();
+}
+
+export async function getAdminBlogPosts(): Promise<BlogPost[]> {
+  const res = await fetch(`${API_BASE}/admin/blog`, { credentials: "include" });
+  if (!res.ok) throw new Error("Blog postlarni yuklab bo'lmadi");
+  return res.json();
+}
+
+export async function createBlogPost(post: InsertBlogPost): Promise<BlogPost> {
+  const res = await fetch(`${API_BASE}/blog`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(post),
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Blog post yaratib bo'lmadi");
+  return res.json();
+}
+
+export async function updateBlogPost(id: number, data: Partial<InsertBlogPost>): Promise<BlogPost> {
+  const res = await fetch(`${API_BASE}/blog/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Blog post yangilab bo'lmadi");
+  return res.json();
+}
+
+export async function deleteBlogPost(id: number): Promise<void> {
+  const res = await fetch(`${API_BASE}/blog/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Blog post o'chirib bo'lmadi");
+}
+
+export async function publishBlogPost(id: number): Promise<BlogPost> {
+  const res = await fetch(`${API_BASE}/blog/${id}/publish`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Blog post nashr qilib bo'lmadi");
+  return res.json();
+}
+
+export async function generateBlogContent(topic: string, category?: string, keywords?: string[]): Promise<any> {
+  const res = await fetch(`${API_BASE}/blog/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ topic, category, keywords }),
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("AI kontent yaratib bo'lmadi");
+  return res.json();
+}
+
+
