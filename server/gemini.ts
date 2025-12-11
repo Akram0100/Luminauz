@@ -254,3 +254,81 @@ MUHIM: Narxlarni FAQAT so'm da ko'rsating, $ belgisi ishlatmang!
     };
   }
 }
+
+export interface ChatHistory {
+  role: "user" | "model";
+  parts: string;
+}
+
+export async function chatWithStoreAssistant(
+  message: string,
+  history: ChatHistory[],
+  products: any[]
+): Promise<string> {
+  try {
+    // Mahsulotlar ro'yxatini qisqartirilgan formatda tayyorlash (context oynasini tejash uchun)
+    const productsContext = products.map(p => ({
+      id: p.id,
+      name: p.title,
+      price: p.price,
+      category: p.category,
+      brand: p.brand,
+      status: p.stock > 0 ? "Sotuvda bor" : "Tugagan"
+    }));
+
+    const systemPrompt = `Siz "Lumina" onlayn do'konining aqlli va samimiy maslahatchisisiz. 
+Sizning vazifangiz mijozlarga mahsulot tanlashda yordam berish, narxlar haqida ma'lumot berish va savollarga javob berish.
+
+Do'konimizdagi mavjud mahsulotlar ro'yxati:
+${JSON.stringify(productsContext, null, 2)}
+
+Qoidalar:
+1. Faqat yuqoridagi ro'yxatdagi mahsulotlar haqida gapiring. Agar mijoz ro'yxatda yo'q narsani so'rasa, uzr so'rang va bor narsalarni taklif qiling.
+2. Narxlarni so'mda ayting.
+3. Javoblaringiz qisqa, lunda va o'zbek tilida bo'lsin.
+4. Mijozga xushmuomala bo'ling.
+5. Agar mijoz aniq mahsulotni tanlasa, unga "Savatga qo'shish" yoki "Sotib olish"ni taklif qiling (bu shunchaki so'z bilan).
+
+Mijoz bilan suhbatni davom ettiring.`;
+
+    const chat = ai.models.generateContentStream({
+      model: "gemini-2.5-flash",
+      config: {
+        systemInstruction: systemPrompt,
+      },
+      contents: [
+        ...history.map(h => ({
+          role: h.role,
+          parts: [{ text: h.parts }]
+        })),
+        {
+          role: "user",
+          parts: [{ text: message }]
+        }
+      ]
+    });
+
+    // Stream o'rniga oddiy generateContent ishlatamiz hozircha, osonroq integratsiya uchun
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      config: {
+        systemInstruction: systemPrompt,
+      },
+      contents: [
+        ...history.map(h => ({
+          role: h.role,
+          parts: [{ text: h.parts }]
+        })),
+        {
+          role: "user",
+          parts: [{ text: message }]
+        }
+      ]
+    });
+
+    return response.text || "";
+  } catch (error) {
+    console.error("Chat AI error:", error);
+    return "Uzr, hozircha sizga javob bera olmayman. Birozdan so'ng qayta urinib ko'ring.";
+  }
+}

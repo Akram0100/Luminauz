@@ -15,7 +15,7 @@ export function TelegramPopup() {
         const timer = setTimeout(() => {
             setIsOpen(true);
             localStorage.setItem("telegram_popup_shown", "true");
-        }, 120000); // 2 minutes
+        }, 20000); // 20 seconds
 
         return () => clearTimeout(timer);
     }, []);

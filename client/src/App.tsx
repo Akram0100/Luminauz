@@ -22,6 +22,7 @@ import Register from "@/pages/register";
 import CustomerLogin from "@/pages/customer-login";
 import Profile from "@/pages/profile";
 import { Link } from "wouter";
+import { ChatWidget } from "@/components/chat-widget";
 
 function ProtectedAdminRoute({ component: Component }: { component: React.ComponentType }) {
   const { user, isLoading, isAdmin } = useAuth();
@@ -76,6 +77,7 @@ function App() {
               <TooltipProvider>
                 <Toaster />
                 <Router />
+                <ChatWidget />
               </TooltipProvider>
             </CartProvider>
           </AuthProvider>

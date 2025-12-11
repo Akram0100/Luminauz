@@ -392,11 +392,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Product Grid */}
+      {/* Product Grid - Grouped by Category */}
       <section id="products" className="py-24">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between gap-4 mb-12">
-            <h2 className="text-3xl font-bold">Tanlangan Mahsulotlar</h2>
+            <h2 className="text-3xl font-bold">Mahsulotlar</h2>
             <span className="text-muted-foreground">{filteredProducts.length} ta mahsulot</span>
           </div>
 
@@ -417,92 +417,97 @@ export default function Home() {
           ) : filteredProducts.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-muted-foreground text-lg">
-                {searchQuery ? `"${searchQuery}" bo'yicha mahsulot topilmadi` : "Hozircha mahsulotlar yo'q. Admin paneldan yangi mahsulot qo'shing."}
+                {searchQuery ? `"${searchQuery}" bo'yicha mahsulot topilmadi` : "Hozircha mahsulotlar yo'q."}
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {filteredProducts.map((product, idx) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="group relative rounded-2xl overflow-hidden bg-card border border-border hover:border-primary/50 transition-all duration-300"
-                >
-                  <Link href={`/product/${product.slug || product.id}`} data-testid={`link-product-${product.id}`}>
-                    <div className="aspect-square overflow-hidden relative">
-                      <img
-                        src={product.imageUrl}
-                        alt={product.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent opacity-60" />
+            <div className="space-y-16">
+              {/* Categorized Display */}
+              {Array.from(new Set(filteredProducts.map(p => p.category))).map(category => {
+                const categoryProducts = filteredProducts
+                  .filter(p => p.category === category)
+                  .sort((a, b) => a.price - b.price); // Cheapest first
 
-                      <div className="absolute top-3 right-3">
-                        {product.isFlashSale ? (
-                          <Badge className="bg-red-500 text-white">
-                            <Flame className="w-3 h-3 mr-1" /> Sale
-                          </Badge>
-                        ) : (
-                          <Badge className="bg-background/50 backdrop-blur-md border border-primary/30 text-primary text-xs">
-                            <Star className="w-3 h-3 mr-1" /> Premium
-                          </Badge>
-                        )}
-                      </div>
+                if (categoryProducts.length === 0) return null;
+
+                return (
+                  <div key={category} className="space-y-6">
+                    <div className="flex items-center gap-4">
+                      <h3 className="text-2xl font-bold text-primary">{category}</h3>
+                      <div className="h-px bg-border flex-1" />
                     </div>
-                  </Link>
 
-                  <div className="p-5">
-                    <div className="text-xs text-primary mb-2 font-medium tracking-wider uppercase">
-                      {product.category}
-                    </div>
-                    <Link href={`/product/${product.slug || product.id}`}>
-                      <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors cursor-pointer">
-                        {product.title}
-                      </h3>
-                    </Link>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                      {categoryProducts.map((product, idx) => (
+                        <motion.div
+                          key={product.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: idx * 0.1 }}
+                          className="group relative rounded-2xl overflow-hidden bg-card border border-border hover:border-primary/50 transition-all duration-300"
+                        >
+                          <Link href={`/product/${product.slug || product.id}`} data-testid={`link-product-${product.id}`}>
+                            <div className="aspect-square overflow-hidden relative">
+                              <img
+                                src={product.imageUrl}
+                                alt={product.title}
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent opacity-60" />
 
-                    {product.tags && product.tags.length > 0 && (
-                      <div className="mb-4 space-y-1">
-                        <div className="flex flex-wrap gap-1">
-                          {product.tags.slice(0, 2).map((tag: string) => (
-                            <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground border border-border">
-                              #{tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                              <div className="absolute top-3 right-3">
+                                {product.isFlashSale ? (
+                                  <Badge className="bg-red-500 text-white">
+                                    <Flame className="w-3 h-3 mr-1" /> Sale
+                                  </Badge>
+                                ) : (
+                                  <Badge className="bg-background/50 backdrop-blur-md border border-primary/30 text-primary text-xs">
+                                    <Star className="w-3 h-3 mr-1" /> Premium
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </Link>
 
-                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl font-bold font-mono">{formatPrice(getDisplayPrice(product))}</span>
-                        {product.isFlashSale && product.flashSalePrice && (
-                          <span className="text-sm text-muted-foreground line-through">{formatPrice(product.price)}</span>
-                        )}
-                      </div>
-                      <Button
-                        size="sm"
-                        className={`rounded-full transition-colors ${addedItems.has(product.id)
-                          ? "bg-green-500 text-white"
-                          : isInCart(product.id)
-                            ? "bg-primary/20 text-primary"
-                            : "bg-secondary hover:bg-primary hover:text-background"
-                          }`}
-                        onClick={() => handleAddToCart(product)}
-                        data-testid={`button-add-to-cart-${product.id}`}
-                      >
-                        {addedItems.has(product.id) ? (
-                          <Check className="w-4 h-4" />
-                        ) : (
-                          <ShoppingCart className="w-4 h-4" />
-                        )}
-                      </Button>
+                          <div className="p-5">
+                            <Link href={`/product/${product.slug || product.id}`}>
+                              <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors cursor-pointer truncate">
+                                {product.title}
+                              </h3>
+                            </Link>
+
+                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xl font-bold font-mono">{formatPrice(getDisplayPrice(product))}</span>
+                                {product.isFlashSale && product.flashSalePrice && (
+                                  <span className="text-sm text-muted-foreground line-through">{formatPrice(product.price)}</span>
+                                )}
+                              </div>
+                              <Button
+                                size="sm"
+                                className={`rounded-full transition-colors ${addedItems.has(product.id)
+                                  ? "bg-green-500 text-white"
+                                  : isInCart(product.id)
+                                    ? "bg-primary/20 text-primary"
+                                    : "bg-secondary hover:bg-primary hover:text-background"
+                                  }`}
+                                onClick={() => handleAddToCart(product)}
+                                data-testid={`button-add-to-cart-${product.id}`}
+                              >
+                                {addedItems.has(product.id) ? (
+                                  <Check className="w-4 h-4" />
+                                ) : (
+                                  <ShoppingCart className="w-4 h-4" />
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
                     </div>
                   </div>
-                </motion.div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
