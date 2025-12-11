@@ -141,11 +141,14 @@ export async function runHourlyCronJob(): Promise<void> {
     const product = await storage.getRandomUnpostedProduct();
 
     if (!product) {
-      const latestProduct = await storage.getLatestProduct();
-      if (latestProduct) {
-        await postProductToTelegram(latestProduct);
+      console.log("[CRON] No unposted products found. Looking for the one posted longest ago...");
+      const recycledProduct = await storage.getRandomProductPostedLongestAgo();
+
+      if (recycledProduct) {
+        console.log(`[CRON] Found recycled product: ${recycledProduct.id} (${recycledProduct.title})`);
+        await postProductToTelegram(recycledProduct);
       } else {
-        console.log("[CRON] No products available to post");
+        console.log("[CRON] No products available to post at all");
       }
     } else {
       await postProductToTelegram(product);

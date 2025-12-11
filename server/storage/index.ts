@@ -47,6 +47,7 @@ export class DatabaseStorage implements IStorage {
     getProductBySlug(slug: string): Promise<Product | undefined> { return this.products.getProductBySlug(slug); }
     getLatestProduct(): Promise<Product | undefined> { return this.products.getLatestProduct(); }
     getRandomUnpostedProduct(): Promise<Product | undefined> { return this.products.getRandomUnpostedProduct(); }
+    getRandomProductPostedLongestAgo(): Promise<Product | undefined> { return this.products.getRandomProductPostedLongestAgo(); }
     getRandomUnpostedInstagramProduct(): Promise<Product | undefined> { return this.products.getRandomUnpostedInstagramProduct(); }
     getFlashSaleProducts(): Promise<Product[]> { return this.products.getFlashSaleProducts(); }
     getRelatedProducts(productId: number, limit?: number): Promise<Product[]> { return this.products.getRelatedProducts(productId, limit); }

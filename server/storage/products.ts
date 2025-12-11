@@ -73,6 +73,21 @@ export class ProductStorage {
         return product || undefined;
     }
 
+    async getRandomProductPostedLongestAgo(): Promise<Product | undefined> {
+        const [product] = await db
+            .select()
+            .from(products)
+            .where(
+                and(
+                    sql`${products.telegramPostedAt} IS NOT NULL`,
+                    or(sql`${products.stock} > 0`, isNull(products.stock))
+                )
+            )
+            .orderBy(products.telegramPostedAt)
+            .limit(1);
+        return product || undefined;
+    }
+
     async getRandomUnpostedInstagramProduct(): Promise<Product | undefined> {
         const [product] = await db
             .select()

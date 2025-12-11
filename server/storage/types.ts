@@ -30,6 +30,7 @@ export interface IStorage {
     getProductBySlug(slug: string): Promise<Product | undefined>;
     getLatestProduct(): Promise<Product | undefined>;
     getRandomUnpostedProduct(): Promise<Product | undefined>;
+    getRandomProductPostedLongestAgo(): Promise<Product | undefined>;
     getRandomUnpostedInstagramProduct(): Promise<Product | undefined>;
     getFlashSaleProducts(): Promise<Product[]>;
     getRelatedProducts(productId: number, limit?: number): Promise<Product[]>;
