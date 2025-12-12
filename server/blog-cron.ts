@@ -189,6 +189,59 @@ export async function runDailyBlogCronJob(): Promise<void> {
     console.log(`[BLOG CRON] Daily job completed. Created ${successCount}/${postsToGenerate} posts.`);
 }
 
+// Generate a single blog post (for distributed cron jobs throughout the day)
+export async function runSingleBlogPost(): Promise<{ success: boolean; post?: any; error?: string }> {
+    console.log("[BLOG CRON] Generating single blog post...");
+
+    if (!genAI) {
+        console.error("[BLOG CRON] Gemini API key not configured");
+        return { success: false, error: "Gemini API sozlanmagan" };
+    }
+
+    try {
+        // Select random category and topic
+        const randomCategory = BLOG_TOPICS[Math.floor(Math.random() * BLOG_TOPICS.length)];
+        const randomTopic = randomCategory.topics[Math.floor(Math.random() * randomCategory.topics.length)];
+
+        console.log(`[BLOG CRON] Generating post: "${randomTopic}" (${randomCategory.category})`);
+
+        const generatedContent = await generateBlogPost(randomTopic, randomCategory.category);
+
+        // Create unique slug
+        const slug = generateSlug(generatedContent.title) + '-' + Date.now();
+
+        // Create blog post
+        const post = await storage.createBlogPost({
+            title: generatedContent.title,
+            slug: slug,
+            excerpt: generatedContent.excerpt,
+            content: generatedContent.content,
+            category: randomCategory.category,
+            author: "Lumina AI",
+            imageUrl: `https://picsum.photos/seed/${Date.now()}/800/400`,
+            tags: generatedContent.tags || [],
+            metaTitle: generatedContent.metaTitle,
+            metaDescription: generatedContent.metaDescription,
+            isPublished: true,
+            publishedAt: new Date(),
+        });
+
+        // Publish immediately
+        await storage.publishBlogPost(post.id);
+
+        console.log(`[BLOG CRON] Successfully created post: "${post.title}" (ID: ${post.id})`);
+
+        return {
+            success: true,
+            post: { id: post.id, title: post.title, slug: post.slug, category: post.category }
+        };
+
+    } catch (error: any) {
+        console.error(`[BLOG CRON] Failed to generate post:`, error.message);
+        return { success: false, error: error.message };
+    }
+}
+
 // Cron job state
 let blogCronInterval: NodeJS.Timeout | null = null;
 let isBlogCronRunning = false;
@@ -219,3 +272,4 @@ export function stopBlogCron(): void {
 export function getBlogCronStatus(): { running: boolean } {
     return { running: isBlogCronRunning };
 }
+

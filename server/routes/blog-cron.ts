@@ -4,7 +4,8 @@ import {
     startBlogCron,
     stopBlogCron,
     getBlogCronStatus,
-    runDailyBlogCronJob
+    runDailyBlogCronJob,
+    runSingleBlogPost
 } from "../blog-cron";
 
 const router = Router();
@@ -38,6 +39,24 @@ router.post("/run-now", requireAdmin, async (req, res) => {
             message: "Blog yaratish boshlandi. 5 ta maqola yaratiladi (3-5 daqiqa)",
             ...getBlogCronStatus()
         });
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Run single post (for distributed cron - call 5 times at different hours)
+router.post("/run-single", async (req, res) => {
+    try {
+        const result = await runSingleBlogPost();
+
+        if (result.success) {
+            res.json({
+                message: "1 ta maqola muvaffaqiyatli yaratildi",
+                ...result
+            });
+        } else {
+            res.status(500).json({ error: result.error });
+        }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
