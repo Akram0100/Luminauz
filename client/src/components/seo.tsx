@@ -47,7 +47,7 @@ export function SEO({
         offers: {
             "@type": "Offer",
             price: product.price,
-            priceCurrency: product.currency || "UZS",
+            priceCurrency: product.currency || "so'm",
             availability: product.availability === "OutOfStock"
                 ? "https://schema.org/OutOfStock"
                 : "https://schema.org/InStock",
@@ -141,7 +141,7 @@ export function SEO({
             {product && (
                 <>
                     <meta property="product:price:amount" content={product.price.toString()} />
-                    <meta property="product:price:currency" content={product.currency || "UZS"} />
+                    <meta property="product:price:currency" content={product.currency || "so'm"} />
                 </>
             )}
 
