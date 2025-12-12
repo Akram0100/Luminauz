@@ -368,47 +368,70 @@ export default function Admin() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card>
+          <Card className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/20">
             <CardContent className="p-4">
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <p className="text-sm text-muted-foreground">Mahsulotlar</p>
-                  <p className="text-2xl font-bold">{products.length}</p>
+                  <p className="text-sm text-muted-foreground">Jami Mahsulotlar</p>
+                  <p className="text-3xl font-bold">{products.length}</p>
+                  <p className="text-xs text-blue-500 mt-1">
+                    {products.filter(p => p.isFlashSale).length} ta aksiyada
+                  </p>
                 </div>
-                <Package className="w-8 h-8 text-primary/50" />
+                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <Package className="w-6 h-6 text-blue-500" />
+                </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/20">
             <CardContent className="p-4">
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <p className="text-sm text-muted-foreground">Buyurtmalar</p>
-                  <p className="text-2xl font-bold">{orders.length}</p>
+                  <p className="text-sm text-muted-foreground">Jami Buyurtmalar</p>
+                  <p className="text-3xl font-bold">{orders.length}</p>
+                  <p className="text-xs text-purple-500 mt-1">
+                    {orders.filter(o => o.status === "bajarildi").length} ta bajarilgan
+                  </p>
                 </div>
-                <ShoppingBag className="w-8 h-8 text-primary/50" />
+                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                  <ShoppingBag className="w-6 h-6 text-purple-500" />
+                </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/20">
             <CardContent className="p-4">
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <p className="text-sm text-muted-foreground">Daromad</p>
-                  <p className="text-2xl font-bold">{formatPrice(totalRevenue)}</p>
+                  <p className="text-sm text-muted-foreground">Jami Daromad</p>
+                  <p className="text-3xl font-bold">{formatPrice(totalRevenue)}</p>
+                  <div className="flex items-center gap-1 mt-1">
+                    <TrendingUp className="w-3 h-3 text-green-500" />
+                    <span className="text-xs text-green-500">+12.5% bu oy</span>
+                  </div>
                 </div>
-                <TrendingUp className="w-8 h-8 text-green-500/50" />
+                <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-green-500" />
+                </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-gradient-to-br from-orange-500/10 to-yellow-500/10 border-orange-500/20">
             <CardContent className="p-4">
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <p className="text-sm text-muted-foreground">Yangi Buyurtmalar</p>
-                  <p className="text-2xl font-bold">{newOrders}</p>
+                  <p className="text-3xl font-bold">{newOrders}</p>
+                  {newOrders > 0 && (
+                    <p className="text-xs text-orange-500 mt-1 animate-pulse">
+                      ⚡ Diqqat talab qiladi
+                    </p>
+                  )}
                 </div>
-                <Zap className="w-8 h-8 text-yellow-500/50" />
+                <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center">
+                  <Zap className="w-6 h-6 text-orange-500" />
+                </div>
               </div>
             </CardContent>
           </Card>

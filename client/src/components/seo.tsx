@@ -17,6 +17,7 @@ interface SEOProps {
         category?: string;
         sku?: string;
     };
+    breadcrumbs?: { name: string; url: string }[];
 }
 
 const SITE_NAME = "Lumina";
@@ -30,39 +31,87 @@ export function SEO({
     url,
     type = "website",
     product,
+    breadcrumbs,
 }: SEOProps) {
     const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} - O'zbekistondagi Eng Yaxshi Online Do'kon`;
     const fullUrl = url ? `${BASE_URL}${url}` : BASE_URL;
     const imageUrl = image || `${BASE_URL}/og-image.png`;
 
-    // JSON-LD Schema
-    const schemaData = product
-        ? {
-            "@context": "https://schema.org",
-            "@type": "Product",
-            name: product.name,
-            description: product.description,
-            image: product.image,
-            offers: {
-                "@type": "Offer",
-                price: product.price,
-                priceCurrency: product.currency || "USD",
-                availability: product.availability === "OutOfStock"
-                    ? "https://schema.org/OutOfStock"
-                    : "https://schema.org/InStock",
+    // Product Schema
+    const productSchema = product ? {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.name,
+        description: product.description,
+        image: product.image,
+        offers: {
+            "@type": "Offer",
+            price: product.price,
+            priceCurrency: product.currency || "UZS",
+            availability: product.availability === "OutOfStock"
+                ? "https://schema.org/OutOfStock"
+                : "https://schema.org/InStock",
+            seller: {
+                "@type": "Organization",
+                name: SITE_NAME,
             },
-            ...(product.brand && { brand: { "@type": "Brand", name: product.brand } }),
-            ...(product.category && { category: product.category }),
-            ...(product.sku && { sku: product.sku }),
-        }
-        : {
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: SITE_NAME,
-            url: BASE_URL,
-            description: DEFAULT_DESCRIPTION,
-            logo: `${BASE_URL}/favicon.png`,
-        };
+        },
+        ...(product.brand && { brand: { "@type": "Brand", name: product.brand } }),
+        ...(product.category && { category: product.category }),
+        ...(product.sku && { sku: product.sku }),
+    } : null;
+
+    // Organization Schema
+    const organizationSchema = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: SITE_NAME,
+        url: BASE_URL,
+        description: DEFAULT_DESCRIPTION,
+        logo: `${BASE_URL}/favicon.png`,
+        contactPoint: {
+            "@type": "ContactPoint",
+            telephone: "+998-90-123-45-67",
+            contactType: "customer service",
+            availableLanguage: ["uz", "ru"],
+        },
+        sameAs: [
+            "https://t.me/Lumina_uzb",
+        ],
+    };
+
+    // WebSite Schema (for sitelinks search box)
+    const websiteSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: SITE_NAME,
+        url: BASE_URL,
+        potentialAction: {
+            "@type": "SearchAction",
+            target: `${BASE_URL}/?q={search_term_string}`,
+            "query-input": "required name=search_term_string",
+        },
+    };
+
+    // Breadcrumb Schema
+    const breadcrumbSchema = breadcrumbs && breadcrumbs.length > 0 ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: breadcrumbs.map((item, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            name: item.name,
+            item: `${BASE_URL}${item.url}`,
+        })),
+    } : null;
+
+    // Combine schemas
+    const schemas = [
+        organizationSchema,
+        websiteSchema,
+        productSchema,
+        breadcrumbSchema,
+    ].filter(Boolean);
 
     return (
         <Helmet>
@@ -70,6 +119,8 @@ export function SEO({
             <title>{fullTitle}</title>
             <meta name="description" content={description} />
             <link rel="canonical" href={fullUrl} />
+            <meta name="robots" content="index, follow" />
+            <meta name="keywords" content="online do'kon, internet magazin, arzon narxlar, yetkazib berish, O'zbekiston, Lumina" />
 
             {/* Open Graph */}
             <meta property="og:title" content={fullTitle} />
@@ -90,14 +141,17 @@ export function SEO({
             {product && (
                 <>
                     <meta property="product:price:amount" content={product.price.toString()} />
-                    <meta property="product:price:currency" content={product.currency || "USD"} />
+                    <meta property="product:price:currency" content={product.currency || "UZS"} />
                 </>
             )}
 
             {/* JSON-LD Schema */}
-            <script type="application/ld+json">
-                {JSON.stringify(schemaData)}
-            </script>
+            {schemas.map((schema, index) => (
+                <script key={index} type="application/ld+json">
+                    {JSON.stringify(schema)}
+                </script>
+            ))}
         </Helmet>
     );
 }
+

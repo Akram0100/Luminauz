@@ -57,6 +57,8 @@ function CountdownTimer({ endsAt }: { endsAt: Date }) {
 function ImageSlider({ images, mainImage }: { images: string[]; mainImage: string }) {
   const allImages = [mainImage, ...images.filter(img => img !== mainImage)];
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % allImages.length);
@@ -66,13 +68,29 @@ function ImageSlider({ images, mainImage }: { images: string[]; mainImage: strin
     setCurrentIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
   };
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomPosition({ x, y });
+  };
+
   if (allImages.length === 1) {
     return (
-      <div className="aspect-square rounded-2xl overflow-hidden bg-secondary/20">
+      <div
+        className="aspect-square rounded-2xl overflow-hidden bg-secondary/20 relative cursor-zoom-in"
+        onMouseEnter={() => setIsZoomed(true)}
+        onMouseLeave={() => setIsZoomed(false)}
+        onMouseMove={handleMouseMove}
+      >
         <img
           src={allImages[0]}
           alt="Product"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-300"
+          style={isZoomed ? {
+            transform: 'scale(2)',
+            transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`
+          } : {}}
         />
       </div>
     );
@@ -80,7 +98,12 @@ function ImageSlider({ images, mainImage }: { images: string[]; mainImage: strin
 
   return (
     <div className="space-y-4">
-      <div className="relative aspect-square rounded-2xl overflow-hidden bg-secondary/20 group">
+      <div
+        className="relative aspect-square rounded-2xl overflow-hidden bg-secondary/20 group cursor-zoom-in"
+        onMouseEnter={() => setIsZoomed(true)}
+        onMouseLeave={() => setIsZoomed(false)}
+        onMouseMove={handleMouseMove}
+      >
         <AnimatePresence mode="wait">
           <motion.img
             key={currentIndex}
@@ -90,15 +113,26 @@ function ImageSlider({ images, mainImage }: { images: string[]; mainImage: strin
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300"
+            style={isZoomed ? {
+              transform: 'scale(2)',
+              transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`
+            } : {}}
           />
         </AnimatePresence>
+
+        {/* Zoom hint */}
+        {!isZoomed && (
+          <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+            🔍 Kattalashtirish
+          </div>
+        )}
 
         <Button
           size="icon"
           variant="secondary"
           className="absolute left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
-          onClick={prevSlide}
+          onClick={(e) => { e.stopPropagation(); prevSlide(); }}
           data-testid="button-prev-image"
         >
           <ChevronLeft className="w-5 h-5" />
@@ -108,7 +142,7 @@ function ImageSlider({ images, mainImage }: { images: string[]; mainImage: strin
           size="icon"
           variant="secondary"
           className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
-          onClick={nextSlide}
+          onClick={(e) => { e.stopPropagation(); nextSlide(); }}
           data-testid="button-next-image"
         >
           <ChevronRight className="w-5 h-5" />
@@ -265,6 +299,116 @@ function RelatedProducts({ productId }: { productId: number }) {
         ))}
       </div>
     </div>
+  );
+}
+
+// Demo reviews data
+const demoReviews = [
+  {
+    id: 1,
+    name: "Aziza K.",
+    rating: 5,
+    date: "2024-12-10",
+    comment: "Juda zo'r mahsulot! Sifati a'lo darajada va tez yetkazib berishdi. Tavsiya qilaman!",
+    helpful: 12,
+    verified: true,
+  },
+  {
+    id: 2,
+    name: "Sardor A.",
+    rating: 4,
+    date: "2024-12-08",
+    comment: "Yaxshi mahsulot, lekin qadoqlash biroz yaxshiroq bo'lishi mumkin edi. Umuman olganda mamnunman.",
+    helpful: 8,
+    verified: true,
+  },
+  {
+    id: 3,
+    name: "Malika R.",
+    rating: 5,
+    date: "2024-12-05",
+    comment: "Narxiga nisbatan ajoyib sifat. Ikkinchi marta buyurtma qilyapman. Rahmat!",
+    helpful: 15,
+    verified: true,
+  },
+];
+
+function CustomerReviews({ productId }: { productId: number }) {
+  const [showAll, setShowAll] = useState(false);
+  const displayedReviews = showAll ? demoReviews : demoReviews.slice(0, 2);
+
+  const averageRating = demoReviews.reduce((sum, r) => sum + r.rating, 0) / demoReviews.length;
+
+  return (
+    <Card className="mt-8">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl flex items-center gap-2">
+            <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+            Mijozlar Sharhlari
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            <div className="flex">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`w-4 h-4 ${star <= Math.round(averageRating) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+                />
+              ))}
+            </div>
+            <span className="font-semibold">{averageRating.toFixed(1)}</span>
+            <span className="text-muted-foreground text-sm">({demoReviews.length} ta sharh)</span>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {displayedReviews.map((review) => (
+          <div key={review.id} className="border-b border-border pb-6 last:border-0 last:pb-0">
+            <div className="flex items-start justify-between mb-2">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold">{review.name}</span>
+                  {review.verified && (
+                    <Badge variant="secondary" className="text-xs">
+                      <Check className="w-3 h-3 mr-1" /> Tasdiqlangan xarid
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className={`w-3 h-3 ${star <= review.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(review.date).toLocaleDateString('uz-UZ')}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <p className="text-muted-foreground">{review.comment}</p>
+            <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+              <button className="hover:text-primary transition-colors">
+                👍 Foydali ({review.helpful})
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {demoReviews.length > 2 && (
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => setShowAll(!showAll)}
+          >
+            {showAll ? "Kamroq ko'rsatish" : `Barcha sharhlarni ko'rish (${demoReviews.length})`}
+          </Button>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -549,6 +693,8 @@ export default function ProductPage() {
         </div>
 
         {product && <RelatedProducts productId={product.id} />}
+
+        {product && <CustomerReviews productId={product.id} />}
       </div>
 
       {/* Mobile Sticky Bottom Bar */}
