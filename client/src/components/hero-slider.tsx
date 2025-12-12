@@ -12,6 +12,7 @@ interface Slide {
     buttonLink: string;
     bgGradient: string;
     accentColor: string;
+    imageUrl: string;
 }
 
 const slides: Slide[] = [
@@ -23,6 +24,7 @@ const slides: Slide[] = [
         buttonLink: "#products",
         bgGradient: "from-violet-600 via-purple-600 to-indigo-700",
         accentColor: "bg-white text-purple-600",
+        imageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80",
     },
     {
         id: 2,
@@ -32,6 +34,7 @@ const slides: Slide[] = [
         buttonLink: "/flash-sales",
         bgGradient: "from-orange-500 via-red-500 to-pink-600",
         accentColor: "bg-white text-red-600",
+        imageUrl: "https://images.unsplash.com/photo-1560343090-f0409e92791a?w=600&q=80",
     },
     {
         id: 3,
@@ -41,6 +44,7 @@ const slides: Slide[] = [
         buttonLink: "#products",
         bgGradient: "from-emerald-500 via-teal-500 to-cyan-600",
         accentColor: "bg-white text-teal-600",
+        imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80",
     },
 ];
 
@@ -89,27 +93,51 @@ export function HeroSlider() {
 
                     {/* Content */}
                     <div className="container mx-auto px-4 h-full flex items-center relative z-10">
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3, duration: 0.5 }}
-                            className="max-w-2xl text-white"
-                        >
-                            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
-                                {slide.title}
-                            </h1>
-                            <p className="text-lg md:text-xl opacity-90 mb-8">
-                                {slide.subtitle}
-                            </p>
-                            <Link href={slide.buttonLink}>
-                                <Button
-                                    size="lg"
-                                    className={`${slide.accentColor} font-bold px-8 h-14 rounded-full shadow-xl hover:scale-105 transition-transform`}
-                                >
-                                    {slide.buttonText}
-                                </Button>
-                            </Link>
-                        </motion.div>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center w-full">
+                            {/* Text Content */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3, duration: 0.5 }}
+                                className="text-white"
+                            >
+                                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+                                    {slide.title}
+                                </h1>
+                                <p className="text-lg md:text-xl opacity-90 mb-8">
+                                    {slide.subtitle}
+                                </p>
+                                <Link href={slide.buttonLink}>
+                                    <Button
+                                        size="lg"
+                                        className={`${slide.accentColor} font-bold px-8 h-14 rounded-full shadow-xl hover:scale-105 transition-transform`}
+                                    >
+                                        {slide.buttonText}
+                                    </Button>
+                                </Link>
+                            </motion.div>
+
+                            {/* Image */}
+                            <motion.div
+                                initial={{ opacity: 0, x: 50, scale: 0.9 }}
+                                animate={{ opacity: 1, x: 0, scale: 1 }}
+                                transition={{ delay: 0.4, duration: 0.6 }}
+                                className="hidden lg:flex justify-center items-center"
+                            >
+                                <div className="relative">
+                                    {/* Glow effect */}
+                                    <div className="absolute inset-0 bg-white/20 rounded-3xl blur-2xl scale-110" />
+                                    {/* Image */}
+                                    <motion.img
+                                        src={slide.imageUrl}
+                                        alt={slide.title}
+                                        className="relative w-80 h-80 object-cover rounded-3xl shadow-2xl border-4 border-white/30"
+                                        animate={{ y: [0, -10, 0] }}
+                                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                                    />
+                                </div>
+                            </motion.div>
+                        </div>
                     </div>
                 </motion.div>
             </AnimatePresence>
@@ -137,8 +165,8 @@ export function HeroSlider() {
                         key={index}
                         onClick={() => goToSlide(index)}
                         className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide
-                                ? "bg-white w-8"
-                                : "bg-white/50 hover:bg-white/70"
+                            ? "bg-white w-8"
+                            : "bg-white/50 hover:bg-white/70"
                             }`}
                         aria-label={`Go to slide ${index + 1}`}
                     />
@@ -147,3 +175,4 @@ export function HeroSlider() {
         </section>
     );
 }
+
