@@ -12,6 +12,7 @@ import { categoryRouter } from "./categories";
 import { seoRouter } from "./seo";
 import { blogRouter } from "./blog";
 import { chatRouter } from "./chat";
+import { blogCronRouter } from "./blog-cron";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -37,9 +38,11 @@ export async function registerRoutes(
 
   app.use("/api/telegram", telegramRouter);
   app.use("/api/instagram", instagramRouter);
+  app.use("/api/blog-cron", blogCronRouter);
 
   return httpServer;
 }
+
 
 
 
