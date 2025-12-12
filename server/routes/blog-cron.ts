@@ -45,21 +45,27 @@ router.post("/run-now", requireAdmin, async (req, res) => {
 });
 
 // Run single post (for distributed cron - call 5 times at different hours)
-router.post("/run-single", async (req, res) => {
-    try {
-        const result = await runSingleBlogPost();
+// Returns immediately, generates post in background (for 30s timeout limit)
+router.post("/run-single", (req, res) => {
+    // Return immediately
+    res.json({
+        message: "Blog yaratish boshlandi. 1 ta maqola orqa fonda yaratilmoqda...",
+        status: "started",
+        timestamp: new Date().toISOString()
+    });
 
-        if (result.success) {
-            res.json({
-                message: "1 ta maqola muvaffaqiyatli yaratildi",
-                ...result
-            });
-        } else {
-            res.status(500).json({ error: result.error });
-        }
-    } catch (error: any) {
-        res.status(500).json({ error: error.message });
-    }
+    // Run in background
+    runSingleBlogPost()
+        .then(result => {
+            if (result.success) {
+                console.log(`[BLOG CRON] Background post created: ${result.post?.title}`);
+            } else {
+                console.error(`[BLOG CRON] Background post failed: ${result.error}`);
+            }
+        })
+        .catch(err => {
+            console.error("[BLOG CRON] Background post error:", err);
+        });
 });
 
 export const blogCronRouter = router;
