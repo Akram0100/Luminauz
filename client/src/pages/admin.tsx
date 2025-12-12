@@ -596,9 +596,13 @@ export default function Admin() {
                               data-testid="select-category"
                             >
                               <option value="">Kategoriya tanlang</option>
-                              {categories.map((cat: Category) => (
-                                <option key={cat.id} value={cat.name}>
-                                  {cat.name}
+                              {/* Combine categories from both database and products */}
+                              {Array.from(new Set([
+                                ...categories.map((cat: Category) => cat.name),
+                                ...products.map((p: Product) => p.category)
+                              ])).filter(Boolean).map((catName: string) => (
+                                <option key={catName} value={catName}>
+                                  {catName}
                                 </option>
                               ))}
                               <option value="__new__" className="text-primary font-medium">
