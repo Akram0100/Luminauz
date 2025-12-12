@@ -93,7 +93,7 @@ export function HeroSlider() {
 
                     {/* Content */}
                     <div className="container mx-auto px-4 h-full flex items-center relative z-10">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center w-full">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center w-full">
                             {/* Text Content */}
                             <motion.div
                                 initial={{ opacity: 0, y: 30 }}
@@ -122,7 +122,7 @@ export function HeroSlider() {
                                 initial={{ opacity: 0, x: 50, scale: 0.9 }}
                                 animate={{ opacity: 1, x: 0, scale: 1 }}
                                 transition={{ delay: 0.4, duration: 0.6 }}
-                                className="hidden lg:flex justify-center items-center"
+                                className="hidden md:flex justify-center items-center"
                             >
                                 <div className="relative">
                                     {/* Glow effect */}
@@ -131,7 +131,7 @@ export function HeroSlider() {
                                     <motion.img
                                         src={slide.imageUrl}
                                         alt={slide.title}
-                                        className="relative w-80 h-80 object-cover rounded-3xl shadow-2xl border-4 border-white/30"
+                                        className="relative w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80 object-cover rounded-3xl shadow-2xl border-4 border-white/30"
                                         animate={{ y: [0, -10, 0] }}
                                         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                                     />
