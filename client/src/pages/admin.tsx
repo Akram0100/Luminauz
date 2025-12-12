@@ -81,6 +81,9 @@ export default function Admin() {
   const [newSpecValue, setNewSpecValue] = useState("");
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editFormData, setEditFormData] = useState<any>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+  const [newCategoryInput, setNewCategoryInput] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -543,7 +546,66 @@ export default function Admin() {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="category">Kategoriya *</Label>
-                          <Input id="category" name="category" placeholder="Texnologiya" data-testid="input-product-category" />
+                          {showNewCategoryInput ? (
+                            <div className="flex gap-2">
+                              <Input
+                                value={newCategoryInput}
+                                onChange={(e) => setNewCategoryInput(e.target.value)}
+                                placeholder="Yangi kategoriya nomi"
+                                data-testid="input-new-category"
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={() => {
+                                  if (newCategoryInput.trim()) {
+                                    setSelectedCategory(newCategoryInput.trim());
+                                    setShowNewCategoryInput(false);
+                                    setNewCategoryInput("");
+                                  }
+                                }}
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  setShowNewCategoryInput(false);
+                                  setNewCategoryInput("");
+                                }}
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <select
+                              id="category"
+                              name="category"
+                              value={selectedCategory}
+                              onChange={(e) => {
+                                if (e.target.value === "__new__") {
+                                  setShowNewCategoryInput(true);
+                                } else {
+                                  setSelectedCategory(e.target.value);
+                                }
+                              }}
+                              className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                              data-testid="select-category"
+                            >
+                              <option value="">Kategoriya tanlang</option>
+                              {categories.map((cat: Category) => (
+                                <option key={cat.id} value={cat.name}>
+                                  {cat.name}
+                                </option>
+                              ))}
+                              <option value="__new__" className="text-primary font-medium">
+                                ➕ Yangi kategoriya qo'shish
+                              </option>
+                            </select>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="brand" className="flex items-center gap-2">
