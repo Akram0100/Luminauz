@@ -219,11 +219,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <Testimonials />
-
-
-
       {/* All Products Grid */}
       <section id="products" className="py-16">
         <div className="container mx-auto px-4">
