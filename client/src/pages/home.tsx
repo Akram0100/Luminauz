@@ -222,44 +222,7 @@ export default function Home() {
       {/* Testimonials */}
       <Testimonials />
 
-      {/* Search and Filter */}
-      <section className="py-8 border-b border-border">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div className="relative w-full md:w-96">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                placeholder="Mahsulot qidirish..."
-                className="pl-10 h-12 rounded-full"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
 
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant={selectedCategory === null ? "default" : "outline"}
-                size="sm"
-                className="rounded-full"
-                onClick={() => setSelectedCategory(null)}
-              >
-                Hammasi
-              </Button>
-              {categories.map((cat) => (
-                <Button
-                  key={cat}
-                  variant={selectedCategory === cat ? "default" : "outline"}
-                  size="sm"
-                  className="rounded-full"
-                  onClick={() => setSelectedCategory(cat)}
-                >
-                  {cat}
-                </Button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* All Products Grid */}
       <section id="products" className="py-16">
