@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { Zap, ArrowRight, Award, ShoppingCart, ShieldCheck, Check, Truck, Star, Search, Timer, Flame } from "lucide-react";
+import { Search, Timer, Flame, ShoppingCart, Check, Star, ArrowRight, Truck, ShieldCheck, Award, Send } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getProducts, getFlashSales, searchProducts } from "@/lib/api";
+import { getProducts, getFlashSales } from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/hooks/use-cart";
 import { useToast } from "@/hooks/use-toast";
@@ -14,6 +14,10 @@ import { useLocation, Link } from "wouter";
 import type { Product } from "@shared/schema";
 import { formatPrice } from "@/lib/utils";
 import { SEO } from "@/components/seo";
+import { HeroSlider } from "@/components/hero-slider";
+import { FeaturedProducts } from "@/components/featured-products";
+import { CategoryShowcase } from "@/components/category-showcase";
+import { Testimonials } from "@/components/testimonials";
 
 function CountdownTimer({ endsAt }: { endsAt: Date }) {
   const [timeLeft, setTimeLeft] = useState("");
@@ -94,6 +98,11 @@ export default function Home() {
     return product.price;
   };
 
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategory(category);
+    setTimeout(() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' }), 100);
+  };
+
   return (
     <Layout>
       <SEO
@@ -101,151 +110,48 @@ export default function Home() {
         description="Lumina - O'zbekistondagi eng yaxshi online do'kon. Premium sifatli mahsulotlar, arzon narxlar va tezkor yetkazib berish."
         url="/"
       />
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-16 lg:py-24">
-        {/* Background Effects */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-3xl opacity-50" />
-        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-accent/10 rounded-full blur-3xl opacity-40" />
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <Badge variant="outline" className="mb-4 border-primary/50 text-primary bg-primary/10 backdrop-blur-md px-4 py-1.5 text-sm">
-                <Zap className="w-4 h-4 mr-2" />
-                #1 Online Do'kon O'zbekistonda
-              </Badge>
+      {/* Hero Banner Slider */}
+      <HeroSlider />
 
-              <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
-                Sifatli Mahsulotlar{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-400 to-accent">
-                  Arzon Narxlarda
-                </span>
-              </h1>
-
-              <p className="text-lg text-muted-foreground mb-8 max-w-xl leading-relaxed">
-                Minglab mijozlar ishonchini qozongan do'kon. Premium sifat, tezkor yetkazib berish va 100% kafolat.
-              </p>
-
-              <div className="flex flex-wrap gap-4 mb-8">
-                <Button
-                  size="lg"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold px-8 h-14 rounded-full shadow-lg shadow-primary/25"
-                  onClick={() => setLocation("/checkout")}
-                  data-testid="button-start-shopping"
-                >
-                  <ShoppingCart className="mr-2 w-5 h-5" />
-                  Xarid Qilish
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-14 rounded-full border-2 hover:bg-primary/5"
-                  onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
-                >
-                  Katalogni Ko'rish
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </div>
-
-              {/* Trust Stats */}
-              <div className="grid grid-cols-3 gap-6">
-                <div className="text-center lg:text-left">
-                  <div className="text-2xl lg:text-3xl font-bold text-primary">5000+</div>
-                  <div className="text-sm text-muted-foreground">Xaridorlar</div>
-                </div>
-                <div className="text-center lg:text-left">
-                  <div className="text-2xl lg:text-3xl font-bold text-primary">99%</div>
-                  <div className="text-sm text-muted-foreground">Mamnuniyat</div>
-                </div>
-                <div className="text-center lg:text-left">
-                  <div className="text-2xl lg:text-3xl font-bold text-primary">24/7</div>
-                  <div className="text-sm text-muted-foreground">Qo'llab-quvvatlash</div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Right Image/Cards */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative hidden lg:block"
-            >
-              <div className="relative w-full aspect-square max-w-md mx-auto">
-                {/* Floating Cards */}
-                <div className="absolute top-10 left-0 p-4 bg-card/80 backdrop-blur-lg rounded-2xl border border-border shadow-xl animate-bounce" style={{ animationDuration: '3s' }}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-                      <Check className="w-5 h-5 text-green-500" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-sm">Buyurtma tasdiqlandi</div>
-                      <div className="text-xs text-muted-foreground">Hozirgina</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="absolute bottom-20 right-0 p-4 bg-card/80 backdrop-blur-lg rounded-2xl border border-border shadow-xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                      <Truck className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-sm">Bepul yetkazish</div>
-                      <div className="text-xs text-muted-foreground">Barcha buyurtmalarga</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-primary/30 to-accent/30 rounded-full blur-2xl" />
-
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-8 bg-card/50 backdrop-blur-xl rounded-3xl border border-primary/20 shadow-2xl">
-                  <Star className="w-16 h-16 text-primary mx-auto mb-4" />
-                  <div className="text-center">
-                    <div className="text-3xl font-bold">Lumina</div>
-                    <div className="text-muted-foreground">Premium Do'kon</div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section >
+      {/* Category Showcase */}
+      <CategoryShowcase onCategoryClick={handleCategoryClick} />
 
       {/* Flash Sales Section */}
-      {
-        flashSales.length > 0 && (
-          <section className="py-12 bg-gradient-to-r from-red-500/10 via-orange-500/10 to-yellow-500/10 border-y border-red-500/20">
-            <div className="container mx-auto px-4">
-              <div className="flex items-center gap-3 mb-8">
+      {flashSales.length > 0 && (
+        <section className="py-12 bg-gradient-to-r from-red-500/10 via-orange-500/10 to-yellow-500/10 border-y border-red-500/20">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
                 <div className="p-2 rounded-full bg-red-500/20">
                   <Flame className="w-6 h-6 text-red-500 animate-pulse" />
                 </div>
-                <h2 className="text-2xl font-bold">Flash Sale - Tezkor Chegirma!</h2>
+                <h2 className="text-2xl font-bold">Flash Sale</h2>
                 <Badge variant="destructive" className="animate-pulse">
                   <Timer className="w-3 h-3 mr-1" /> Cheklangan Vaqt
                 </Badge>
               </div>
+              <Link href="/flash-sales">
+                <Button variant="ghost" className="text-red-500">
+                  Barchasini ko'rish <ArrowRight className="w-4 h-4 ml-1" />
+                </Button>
+              </Link>
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {flashSales.map((product) => (
-                  <motion.div
-                    key={product.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="group relative rounded-2xl overflow-hidden bg-card border-2 border-red-500/50 hover:border-red-500 transition-all"
-                  >
-                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-red-500 to-orange-500 text-white text-center py-1 text-sm font-bold z-10">
-                      <Timer className="w-3 h-3 inline mr-1" />
-                      {product.flashSaleEnds && <CountdownTimer endsAt={new Date(product.flashSaleEnds)} />}
-                    </div>
+            <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4">
+              {flashSales.slice(0, 6).map((product) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex-shrink-0 w-64 group relative rounded-2xl overflow-hidden bg-card border-2 border-red-500/50 hover:border-red-500 transition-all"
+                >
+                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-red-500 to-orange-500 text-white text-center py-1 text-sm font-bold z-10">
+                    <Timer className="w-3 h-3 inline mr-1" />
+                    {product.flashSaleEnds && <CountdownTimer endsAt={new Date(product.flashSaleEnds)} />}
+                  </div>
 
+                  <Link href={`/product/${product.slug || product.id}`}>
                     <div className="aspect-square overflow-hidden relative pt-8">
                       <img
                         src={product.imageUrl}
@@ -258,97 +164,63 @@ export default function Home() {
                         </Badge>
                       </div>
                     </div>
+                  </Link>
 
-                    <div className="p-4">
-                      <h3 className="font-bold text-lg mb-2 truncate">{product.title}</h3>
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-2xl font-bold text-red-500">{formatPrice(product.flashSalePrice || 0)}</span>
-                        <span className="text-sm text-muted-foreground line-through">{formatPrice(product.price)}</span>
-                      </div>
-                      <Button
-                        className="w-full bg-red-500 hover:bg-red-600 text-white"
-                        onClick={() => handleAddToCart(product)}
-                        data-testid={`button-flash-sale-${product.id}`}
-                      >
-                        <ShoppingCart className="w-4 h-4 mr-2" /> Sotib Olish
-                      </Button>
+                  <div className="p-4">
+                    <h3 className="font-bold text-sm mb-2 truncate">{product.title}</h3>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xl font-bold text-red-500">{formatPrice(product.flashSalePrice || 0)}</span>
+                      <span className="text-xs text-muted-foreground line-through">{formatPrice(product.price)}</span>
                     </div>
-                  </motion.div>
-                ))}
-              </div>
+                    <Button
+                      className="w-full bg-red-500 hover:bg-red-600 text-white rounded-full"
+                      size="sm"
+                      onClick={() => handleAddToCart(product)}
+                    >
+                      <ShoppingCart className="w-4 h-4 mr-2" /> Sotib Olish
+                    </Button>
+                  </div>
+                </motion.div>
+              ))}
             </div>
-          </section>
-        )
-      }
-
-      {/* Categories Section */}
-      <section className="py-16 bg-gradient-to-b from-background to-secondary/10">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold mb-2">Kategoriyalar</h2>
-            <p className="text-muted-foreground">Bizning asosiy mahsulot turlari</p>
           </div>
+        </section>
+      )}
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {[
-              { name: "Elektronika", icon: "📱", color: "from-blue-500/20 to-cyan-500/20" },
-              { name: "Maishiy texnika", icon: "🔌", color: "from-green-500/20 to-emerald-500/20" },
-              { name: "Kiyim-kechak", icon: "👕", color: "from-purple-500/20 to-pink-500/20" },
-              { name: "Sport", icon: "⚽", color: "from-orange-500/20 to-red-500/20" },
-              { name: "Uy-ro'zg'or", icon: "🏠", color: "from-yellow-500/20 to-amber-500/20" },
-              { name: "Go'zallik", icon: "💄", color: "from-pink-500/20 to-rose-500/20" },
-            ].map((cat, idx) => (
-              <motion.div
-                key={cat.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className={`p-6 rounded-2xl bg-gradient-to-br ${cat.color} border border-border hover:border-primary/50 cursor-pointer transition-all hover:scale-105 group`}
-                onClick={() => {
-                  setSelectedCategory(cat.name);
-                  setTimeout(() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' }), 100);
-                }}
-              >
-                <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">{cat.icon}</div>
-                <h3 className="font-semibold text-sm">{cat.name}</h3>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Featured Products */}
+      <FeaturedProducts
+        products={products}
+        onAddToCart={handleAddToCart}
+        addedItems={addedItems}
+        isInCart={isInCart}
+      />
 
-      {/* Features Grid */}
-      <section className="py-20 border-y border-border bg-secondary/5">
+      {/* Trust Badges */}
+      <section className="py-12 border-y border-border bg-secondary/30">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              {
-                icon: Award,
-                title: "Premium Sifat",
-                desc: "Har bir mahsulot sinchkovlik bilan tekshirilgan va sifat standartlariga mos keladi."
-              },
-              {
-                icon: Truck,
-                title: "Tezkor Yetkazish",
-                desc: "1-3 kun ichida bepul yetkazib berish. Buyurtmangizni tez va xavfsiz qabul qiling."
-              },
-              {
-                icon: ShieldCheck,
-                title: "Xavfsiz To'lov",
-                desc: "100% xavfsiz to'lov tizimlari va ma'lumotlaringiz himoyasi kafolatlangan."
-              }
-            ].map((feature, idx) => (
-              <div key={idx} className="p-6 rounded-2xl bg-card border border-border hover:border-primary/30 transition-all hover:bg-secondary/50 group">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <feature.icon className="w-6 h-6 text-primary" />
+              { icon: ShieldCheck, title: "100% Original", desc: "Sifat kafolati" },
+              { icon: Truck, title: "Bepul Yetkazish", desc: "200K+ buyurtmalarga" },
+              { icon: Award, title: "Premium Sifat", desc: "Tekshirilgan mahsulotlar" },
+              { icon: Star, title: "24/7 Yordam", desc: "Har doim aloqadamiz" },
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-center gap-4 p-4">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <item.icon className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.desc}</p>
+                <div>
+                  <h3 className="font-semibold">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.desc}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
+
+      {/* Testimonials */}
+      <Testimonials />
 
       {/* Search and Filter */}
       <section className="py-8 border-b border-border">
@@ -361,7 +233,6 @@ export default function Home() {
                 className="pl-10 h-12 rounded-full"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                data-testid="input-search"
               />
             </div>
 
@@ -371,7 +242,6 @@ export default function Home() {
                 size="sm"
                 className="rounded-full"
                 onClick={() => setSelectedCategory(null)}
-                data-testid="button-category-all"
               >
                 Hammasi
               </Button>
@@ -382,7 +252,6 @@ export default function Home() {
                   size="sm"
                   className="rounded-full"
                   onClick={() => setSelectedCategory(cat)}
-                  data-testid={`button-category-${cat}`}
                 >
                   {cat}
                 </Button>
@@ -392,24 +261,23 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Product Grid */}
-      <section id="products" className="py-24">
+      {/* All Products Grid */}
+      <section id="products" className="py-16">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between gap-4 mb-12">
-            <h2 className="text-3xl font-bold">Tanlangan Mahsulotlar</h2>
+          <div className="flex items-center justify-between gap-4 mb-8">
+            <h2 className="text-2xl font-bold">Barcha Mahsulotlar</h2>
             <span className="text-muted-foreground">{filteredProducts.length} ta mahsulot</span>
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[1, 2, 3, 4].map((i) => (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <div key={i} className="rounded-2xl overflow-hidden bg-card border border-border">
                   <Skeleton className="aspect-square w-full" />
-                  <div className="p-5 space-y-3">
+                  <div className="p-4 space-y-2">
                     <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-6 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-5 w-full" />
+                    <Skeleton className="h-8 w-24" />
                   </div>
                 </div>
               ))}
@@ -417,87 +285,61 @@ export default function Home() {
           ) : filteredProducts.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-muted-foreground text-lg">
-                {searchQuery ? `"${searchQuery}" bo'yicha mahsulot topilmadi` : "Hozircha mahsulotlar yo'q. Admin paneldan yangi mahsulot qo'shing."}
+                {searchQuery ? `"${searchQuery}" bo'yicha mahsulot topilmadi` : "Hozircha mahsulotlar yo'q."}
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {filteredProducts.map((product, idx) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="group relative rounded-2xl overflow-hidden bg-card border border-border hover:border-primary/50 transition-all duration-300"
+                  transition={{ delay: idx * 0.03 }}
+                  className="group relative rounded-2xl overflow-hidden bg-card border border-border hover:border-primary/50 hover:shadow-lg transition-all duration-300"
                 >
-                  <Link href={`/product/${product.slug || product.id}`} data-testid={`link-product-${product.id}`}>
+                  <Link href={`/product/${product.slug || product.id}`}>
                     <div className="aspect-square overflow-hidden relative">
                       <img
                         src={product.imageUrl}
                         alt={product.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent opacity-60" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                      <div className="absolute top-3 right-3">
-                        {product.isFlashSale ? (
-                          <Badge className="bg-red-500 text-white">
-                            <Flame className="w-3 h-3 mr-1" /> Sale
-                          </Badge>
-                        ) : (
-                          <Badge className="bg-background/50 backdrop-blur-md border border-primary/30 text-primary text-xs">
-                            <Star className="w-3 h-3 mr-1" /> Premium
-                          </Badge>
-                        )}
-                      </div>
+                      {product.isFlashSale && (
+                        <Badge className="absolute top-2 left-2 bg-red-500 text-white">
+                          <Flame className="w-3 h-3 mr-1" /> Sale
+                        </Badge>
+                      )}
                     </div>
                   </Link>
 
-                  <div className="p-5">
-                    <div className="text-xs text-primary mb-2 font-medium tracking-wider uppercase">
-                      {product.category}
-                    </div>
+                  <div className="p-4">
+                    <p className="text-xs text-primary font-medium mb-1">{product.category}</p>
                     <Link href={`/product/${product.slug || product.id}`}>
-                      <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors cursor-pointer">
+                      <h3 className="font-semibold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                         {product.title}
                       </h3>
                     </Link>
 
-                    {product.tags && product.tags.length > 0 && (
-                      <div className="mb-4 space-y-1">
-                        <div className="flex flex-wrap gap-1">
-                          {product.tags.slice(0, 2).map((tag: string) => (
-                            <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground border border-border">
-                              #{tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl font-bold font-mono">{formatPrice(getDisplayPrice(product))}</span>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-lg font-bold">{formatPrice(getDisplayPrice(product))}</span>
                         {product.isFlashSale && product.flashSalePrice && (
-                          <span className="text-sm text-muted-foreground line-through">{formatPrice(product.price)}</span>
+                          <span className="text-xs text-muted-foreground line-through ml-2">
+                            {formatPrice(product.price)}
+                          </span>
                         )}
                       </div>
                       <Button
-                        size="sm"
-                        className={`rounded-full transition-colors ${addedItems.has(product.id)
-                          ? "bg-green-500 text-white"
-                          : isInCart(product.id)
-                            ? "bg-primary/20 text-primary"
-                            : "bg-secondary hover:bg-primary hover:text-background"
-                          }`}
+                        size="icon"
+                        variant="ghost"
+                        className={`rounded-full ${addedItems.has(product.id) ? "text-green-500" : ""}`}
                         onClick={() => handleAddToCart(product)}
-                        data-testid={`button-add-to-cart-${product.id}`}
                       >
-                        {addedItems.has(product.id) ? (
-                          <Check className="w-4 h-4" />
-                        ) : (
-                          <ShoppingCart className="w-4 h-4" />
-                        )}
+                        {addedItems.has(product.id) ? <Check className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
                       </Button>
                     </div>
                   </div>
@@ -507,6 +349,27 @@ export default function Home() {
           )}
         </div>
       </section>
-    </Layout >
+
+      {/* Newsletter / Telegram CTA */}
+      <section className="py-16 bg-gradient-to-br from-primary/10 via-background to-accent/10">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-4">Chegirmalardan Xabardor Bo'ling!</h2>
+            <p className="text-muted-foreground mb-8">
+              Telegram kanalimizga obuna bo'ling va maxsus takliflardan birinchi bo'lib xabar oling
+            </p>
+            <a
+              href="https://t.me/Lumina_uzb"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-[#0088cc] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#0077b5] transition-colors shadow-lg"
+            >
+              <Send className="w-5 h-5" />
+              Telegram: @Lumina_uzb
+            </a>
+          </div>
+        </div>
+      </section>
+    </Layout>
   );
 }
