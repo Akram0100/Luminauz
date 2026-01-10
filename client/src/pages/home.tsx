@@ -138,13 +138,13 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
               {flashSales.slice(0, 6).map((product) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="flex-shrink-0 w-64 group relative rounded-2xl overflow-hidden bg-card border-2 border-red-500/50 hover:border-red-500 transition-all"
+                  className="group relative rounded-2xl overflow-hidden bg-card border-2 border-red-500/50 hover:border-red-500 transition-all"
                 >
                   <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-red-500 to-orange-500 text-white text-center py-1 text-sm font-bold z-10">
                     <Timer className="w-3 h-3 inline mr-1" />
