@@ -57,8 +57,6 @@ function CountdownTimer({ endsAt }: { endsAt: Date }) {
 function ImageSlider({ images, mainImage }: { images: string[]; mainImage: string }) {
   const allImages = [mainImage, ...images.filter(img => img !== mainImage)];
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % allImages.length);
@@ -68,29 +66,13 @@ function ImageSlider({ images, mainImage }: { images: string[]; mainImage: strin
     setCurrentIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setZoomPosition({ x, y });
-  };
-
   if (allImages.length === 1) {
     return (
-      <div
-        className="aspect-square rounded-2xl overflow-hidden bg-secondary/20 relative cursor-zoom-in"
-        onMouseEnter={() => setIsZoomed(true)}
-        onMouseLeave={() => setIsZoomed(false)}
-        onMouseMove={handleMouseMove}
-      >
+      <div className="aspect-square rounded-2xl overflow-hidden bg-secondary/20 relative">
         <img
           src={allImages[0]}
           alt="Product"
-          className="w-full h-full object-cover transition-transform duration-300"
-          style={isZoomed ? {
-            transform: 'scale(2)',
-            transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`
-          } : {}}
+          className="w-full h-full object-cover"
         />
       </div>
     );
@@ -98,12 +80,7 @@ function ImageSlider({ images, mainImage }: { images: string[]; mainImage: strin
 
   return (
     <div className="space-y-4">
-      <div
-        className="relative aspect-square rounded-2xl overflow-hidden bg-secondary/20 group cursor-zoom-in"
-        onMouseEnter={() => setIsZoomed(true)}
-        onMouseLeave={() => setIsZoomed(false)}
-        onMouseMove={handleMouseMove}
-      >
+      <div className="relative aspect-square rounded-2xl overflow-hidden bg-secondary/20 group">
         <AnimatePresence mode="wait">
           <motion.img
             key={currentIndex}
@@ -113,20 +90,9 @@ function ImageSlider({ images, mainImage }: { images: string[]; mainImage: strin
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="w-full h-full object-cover transition-transform duration-300"
-            style={isZoomed ? {
-              transform: 'scale(2)',
-              transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`
-            } : {}}
+            className="w-full h-full object-cover"
           />
         </AnimatePresence>
-
-        {/* Zoom hint */}
-        {!isZoomed && (
-          <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-            🔍 Kattalashtirish
-          </div>
-        )}
 
         <Button
           size="icon"
