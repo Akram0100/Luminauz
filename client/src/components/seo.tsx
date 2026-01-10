@@ -21,7 +21,7 @@ interface SEOProps {
 }
 
 const SITE_NAME = "Lumina";
-const BASE_URL = "https://luminauz.onrender.com";
+const BASE_URL = "https://lumina-uz.onrender.com";
 const DEFAULT_DESCRIPTION = "Premium sifatli mahsulotlar, arzon narxlar va tezkor yetkazib berish. O'zbekistondagi eng yaxshi online do'kon.";
 
 export function SEO({

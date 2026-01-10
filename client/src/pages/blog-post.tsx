@@ -93,7 +93,7 @@ export default function BlogPostPage() {
                         name: "Lumina",
                         logo: {
                             "@type": "ImageObject",
-                            url: "https://luminauz.onrender.com/favicon.png"
+                            url: "https://lumina-uz.onrender.com/favicon.png"
                         }
                     },
                     datePublished: post.publishedAt,

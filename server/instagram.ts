@@ -70,7 +70,7 @@ function getFullImageUrl(imageUrl: string): string {
     if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
         return imageUrl;
     }
-    const domain = process.env.RENDER_EXTERNAL_URL || "https://luminauz.onrender.com";
+    const domain = process.env.RENDER_EXTERNAL_URL || "https://lumina-uz.onrender.com";
     return `${domain}${imageUrl}`;
 }
 
@@ -79,7 +79,7 @@ function formatInstagramCaption(
     product: Product,
     marketing: { headline: string; salesText: string; cta: string; offers: string[]; hashtags: string[] }
 ): string {
-    const baseUrl = "luminauz.onrender.com";
+    const baseUrl = "lumina-uz.onrender.com";
     const priceFormatted = product.price.toLocaleString('uz-UZ');
 
     return `${marketing.headline}

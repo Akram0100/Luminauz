@@ -101,7 +101,7 @@ function formatTelegramCaption(
   product: Product,
   marketing: { headline: string; salesText: string; cta: string; offers: string[]; hashtags: string[] }
 ): string {
-  const baseUrl = "https://luminauz.onrender.com";
+  const baseUrl = "https://lumina-uz.onrender.com";
   const productUrl = `${baseUrl}/product/${product.id}`;
 
   const priceFormatted = product.price.toLocaleString('uz-UZ');
@@ -119,7 +119,7 @@ ${marketing.hashtags.slice(0, 5).join(" ")}
 
 🛒 <a href="${productUrl}">Sotib Olish</a>
 📞 Aloqa: +998 99 644 84 44
-🌐 <a href="${baseUrl}">luminauz.onrender.com</a>`;
+🌐 <a href="${baseUrl}">lumina-uz.onrender.com</a>`;
 }
 
 
@@ -130,7 +130,7 @@ function getFullImageUrl(imageUrl: string): string {
   }
 
   // Render domain yoki custom domain
-  const domain = process.env.RENDER_EXTERNAL_URL || "https://luminauz.onrender.com";
+  const domain = process.env.RENDER_EXTERNAL_URL || "https://lumina-uz.onrender.com";
   return `${domain}${imageUrl}`;
 }
 

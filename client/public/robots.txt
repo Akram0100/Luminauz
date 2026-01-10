@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://luminauz.onrender.com/sitemap.xml
+Sitemap: https://lumina-uz.onrender.com/sitemap.xml

@@ -3,7 +3,7 @@ import { storage } from "../storage";
 
 const router = Router();
 
-const BASE_URL = process.env.BASE_URL || "https://luminauz.onrender.com";
+const BASE_URL = process.env.BASE_URL || "https://lumina-uz.onrender.com";
 
 // Sitemap.xml
 router.get("/sitemap.xml", async (req, res) => {
